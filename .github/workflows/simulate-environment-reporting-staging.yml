@@ -1,9 +1,9 @@
-name: Report development snapshot
+name: Report staging snapshot
 
 # On a normal setup the backend and frontend built in the two build jobs would
 # deploy the two artifacts to a server, and we would have set up reporting
 # of the environment to kosli. In this example we do not have a server so
-# we just simulate that we have deployed to development
+# we just simulate that we have deployed to staging
 
 on:
   schedule:
@@ -13,16 +13,18 @@ on:
 env:
   # kosli commands picks up org, env, trail and api-token from these environment variables
   KOSLI_ORG: kosli-public
-  KOSLI_ENV: jira-integration-example-dev
+  KOSLI_ENV: jira-integration-example-staging
   KOSLI_API_TOKEN: "${{ secrets.KOSLI_PUBLIC_API_TOKEN }}"
   KOSLI_CLI_VERSION: "2.11.8"
 
 jobs:
   report-snapshot:
-    name: Report development snapshot
+    name: Report staging snapshot
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: staging-running
 
       - name: Setup Kosli cli
         uses: kosli-dev/setup-cli-action@v2
