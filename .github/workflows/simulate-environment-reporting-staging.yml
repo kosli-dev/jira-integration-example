@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: staging-running
+          ref: running-staging
 
       - name: Setup Kosli cli
         uses: kosli-dev/setup-cli-action@v2

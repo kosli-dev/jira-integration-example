@@ -2,4 +2,3 @@ This is just a file to test out that changes to front-end source code
 can trigger a build, reporting to Kosli and Jira
 
 counter=4
- 
