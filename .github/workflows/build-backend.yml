@@ -2,7 +2,7 @@ name: Build Backend
 
 on:
   push:
-    paths: ["apps/backend/**", ".github/workflows/build-backend.yml"]
+    #paths: ["apps/backend/**", ".github/workflows/build-backend.yml"]
 
 env:
   # kosli commands picks up org, flow, trail and api-token from these environment variables

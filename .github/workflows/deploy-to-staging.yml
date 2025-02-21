@@ -20,9 +20,10 @@ jobs:
         # simulate-environment-reporting-staging.yml will start reporting that
         # this environment is now running.
         run: |
-          if git rev-parse running-staging >/dev/null 2>&1; then \
-          	git tag -d running-staging; \
-          	git push --delete origin running-staging; \
+          set -x
+          if git rev-parse running-staging >/dev/null 2>&1; then
+            git tag -d running-staging;
+          	git push --delete origin running-staging;
           fi
           git tag running-staging
           git push origin running-staging
