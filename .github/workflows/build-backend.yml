@@ -3,7 +3,6 @@ name: Build Backend
 on:
   push:
     paths: ["apps/backend/**", ".github/workflows/build-backend.yml"]
-  workflow_dispatch:
 
 env:
   # kosli commands picks up org, flow, trail and api-token from these environment variables
@@ -74,13 +73,16 @@ jobs:
       - name: Build backend
         run: echo "Here we could do some proper build"
 
+      - name: Extract short SHA
+        run: echo "SHORT_SHA=${GITHUB_SHA:0:7}" >> $GITHUB_ENV
+
       - name: Attest artifact
         id: calculate_fingerprint
         if: ${{ github.ref == 'refs/heads/main' }}
         uses: ./.github/workflows/composites/kosli-attest-dir-artifact
         with:
           kosli-artifact-template-name: backend
-          artifact-env-name: backend0001
+          artifact-name: backend:${{ env.SHORT_SHA }}
           artifact-dir: apps/backend
 
   assert-artifacts:

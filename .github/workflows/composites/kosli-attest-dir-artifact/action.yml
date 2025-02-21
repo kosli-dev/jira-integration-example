@@ -17,8 +17,8 @@ inputs:
   kosli-artifact-template-name:
     description: "Name of the artifact in kosli template-file. Often something generic like 'frontend'"
     required: true
-  artifact-env-name:
-    description: "Name of the artifact used when running in an environment. Often something like 'wezzajjgadwa0005'"
+  artifact-name:
+    description: "Name of this artifact in this build (frontend:b439987)"
     required: true    
   artifact-dir:
     description: "Directory where artifact is stored"
@@ -58,6 +58,6 @@ runs:
       shell: bash
       run: |
         set -x
-        kosli attest artifact ${{ inputs.artifact-env-name }} \
+        kosli attest artifact ${{ inputs.artifact-name }} \
         --name ${{ inputs.kosli-artifact-template-name }} \
         --fingerprint ${{ env.KOSLI_FINGERPRINT }}
