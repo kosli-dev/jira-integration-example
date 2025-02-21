@@ -30,7 +30,6 @@ jobs:
             ${{ env.KOSLI_CLI_VERSION }}
 
       - name: Report snapshot
-        shell: bash
         run: |
           kosli snapshot paths ${{ env.KOSLI_ENV }} \
-	        --paths-file server-paths-file.yml
+            --paths-file server-paths-file.yml
