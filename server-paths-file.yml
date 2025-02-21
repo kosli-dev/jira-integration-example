@@ -1,0 +1,6 @@
+version: 1
+artifacts:
+  backend:
+    path: apps/backend
+  frontend:
+    path: apps/frontend
