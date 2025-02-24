@@ -48,15 +48,14 @@ function create_release
 {
     local -r projectId=$1; shift
     local -r releaseName=$1; shift
+    local -r startDate=$(date -u "+%Y-%m-%d")
 
     local -r url="${JIRA_BASE_URL}/rest/api/3/version"
     local -r data='{
-         "description": "An excellent version",
+         "description": "Release '${releaseName}'",
          "name": "'${releaseName}'",
          "projectId": '${projectId}',
-         "approvers": [{
-             "accountId": "'${approverId}'"
-         }]
+         "startDate": "'${startDate}'"
     }'
     loud_curl_jira POST "${url}" "${data}"
 }
