@@ -28,6 +28,9 @@ jobs:
         run: |
           set -x
           source scripts/lib-jira.sh
+          echo xxx the source was done
+          get_issue OPS-5
+          echo xxxx after get issue
           current_release_json=$(get_current_release_candidate ${{ env.JIRA_PROJECT_ID }})
           echo "${current_release_json}" | jq .
           current_release=$(echo "${current_release_json}" | jq .values)
