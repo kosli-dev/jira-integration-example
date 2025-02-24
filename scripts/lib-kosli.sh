@@ -83,6 +83,7 @@ function get_jira_issue_keys_from_trail
     local -r trailName=$1; shift
 
     local -r url="https://app.kosli.com/api/v2/attestations/${KOSLI_ORG}/${flowName}/trail/${trailName}/jira-ticket"
+    set -o pipefail
     loud_curl_kosli GET "${url}" {} | jq -r '.[].jira_results[].issue_id'
 }
 
@@ -98,6 +99,47 @@ function get_all_jira_issue_keys_for_commits
     echo $issueKeys
 }
 
+function get_artifact_flow_commit_mapping_json
+{
+    # Will return something similar to this
+    #[
+    #  {
+    #    "name": "frontend",
+    #    "flow_name": "jira-example-frontend",
+    #    "staging_git_commit": "bcfd4b6439af92012dd6fdabd2a53f297759cc52",
+    #    "prod_git_commit": "45254f18599330c0e08fe59fcf8bc818972e220f"
+    #  },
+    #  {
+    #    "name": "backend",
+    #    "flow_name": "jira-example-backend",
+    #    "staging_git_commit": "bcfd4b6439af92012dd6fdabd2a53f297759cc52",
+    #    "prod_git_commit": "45254f18599330c0e08fe59fcf8bc818972e220f"
+    #  }
+    #]
+
+    local -r stagingEnvName=$1; shift
+    local -r prodEnvName=$1; shift
+
+    stagingEnvJson=$(get_current_running_env_json ${stagingEnvName})
+    prodEnvJson=$(get_current_running_env_json ${prodEnvName})
+    echo "${stagingEnvJson}" | jq -r '
+      [
+        .[] |
+        {
+          name: .name,
+          flow_name: .flow_name,
+          staging_git_commit: .git_commit
+        }
+      ]' | jq --argjson prodEnvJson "${prodEnvJson}" '
+      [
+        .[] |
+        . + (
+          ($prodEnvJson | map(select(.name == .name and .flow_name == .flow_name)) | .[0]) |
+          {prod_git_commit: .git_commit}
+        )
+      ]'
+}
+
 COMMITS=$(get_commits_between_staging_and_prod ${KOSLI_ENV_STAGING} ${KOSLI_ENV_PROD})
 ISSUE_KEYS=""
 KEYS=$(get_all_jira_issue_keys_for_commits ${KOSLI_FLOW_FRONTEND} "${COMMITS}")
@@ -107,6 +149,48 @@ ISSUE_KEYS+=" $KEYS"
 ISSUE_KEYS=$(echo $ISSUE_KEYS | tr ' ' '\n' | sort -u)
 
 echo $ISSUE_KEYS
+
+#artifactFlowMapping=$(get_artifact_flow_commit_mapping_json ${KOSLI_ENV_STAGING} ${KOSLI_ENV_PROD})
+#
+#echo "$artifactFlowMapping" | jq -c '.[]' | while read -r artifact; do
+#    prod_git_commit=$(echo "$artifact" | jq -r '.prod_git_commit')
+#    staging_git_commit=$(echo "$artifact" | jq -r '.staging_git_commit')
+#
+#    git log --format="%H" "$prod_git_commit..$staging_git_commit"
+#done
+
+
+#exit 0
+#
+#names=""
+#declare -A flow_names
+#declare -A staging_git_commits
+#declare -A prod_git_commits
+#
+#while IFS= read -r line; do
+#    name=$(echo "$line" | awk '{print $1}')
+#    flow_names["$name"]=$(echo "$line" | awk '{print $2}')
+#    staging_git_commits["$name"]=$(echo "$line" | awk '{print $3}')
+#    names+=" $name"
+#done <<< "$(echo "${stagingEnvJson}" | jq -r '.[] | "\(.name) \(.flow_name) \(.git_commit)"')"
+#
+#while IFS= read -r line; do
+#    name=$(echo "$line" | awk '{print $1}')
+#    prod_git_commits["$name"]=$(echo "$line" | awk '{print $3}')
+#    names+=" $name"
+#done <<< "$(echo "${prodEnvJson}" | jq -r '.[] | "\(.name) \(.flow_name) \(.git_commit)"')"
+#
+#
+#for name in ${names}; do
+#  echo "Name: $name"
+#  echo "Flow Name: ${flow_names[$name]}"
+#  echo "Stag Commit: ${staging_git_commits[$name]}"
+#  echo "Prod Commit: ${prod_git_commits[$name]}"
+#  echo "-----"
+#  git log --format="%H" --reverse ${prod_git_commits[$name]}..${staging_git_commits[$name]}
+#done
+
+
 #get_jira_issue_keys_from_trail jira-example-frontend eea3dcd96d366768bb88c5dcf079cfdec2557bcc
 
 #a=$(get_current_env_json ${KOSLI_ENV_STAGING})
