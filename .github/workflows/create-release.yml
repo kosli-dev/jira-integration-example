@@ -32,23 +32,9 @@ jobs:
         run: |
           source scripts/lib-jira.sh
           source scripts/lib-kosli.sh
-          
-#           Check if a release already exists, if so we fail
-#          CURRENT_REL_JSON=$(get_CURRENT_REL_candidate ${{ env.JIRA_PROJECT_ID }})
-#          CURRENT_REL=$(echo "${CURRENT_REL_JSON}" | jq .values)
-#          if [ "${CURRENT_REL}" != "[]" ]; then
-#            echo "Release candidate already exist: ${CURRENT_REL}"
-#            exit 1
-#          fi
-
-#           Create the release and get the release ID
-#          TIMESTAMP=$(date -u "+%Y-%m-%d-%H-%M-%S")
-#          CREATE_RESULT_JSON=$(create_release ${{ env.JIRA_PROJECT_ID }} ${TIMESTAMP})
-#          RELEASE_ID=$(echo "${CREATE_RESULT_JSON}" | jq .id)
           RELEASE_ID=10099
 
-          # Add jira tickets to release
-#          JIRA_KEYS=$(get_issue_keys_between_staging_and_prod)
+          JIRA_KEYS=$(get_issue_keys_between_staging_and_prod)
           echo "Found issues: ${JIRA_KEYS}"
           for JIRA_KEY in ${JIRA_KEYS}; do 
             add_issue_to_release ${JIRA_KEY} ${RELEASE_ID}
