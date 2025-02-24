@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#JIRA_BASE_API="https://kosli-team.atlassian.net"
+#JIRA_BASE_URL="https://kosli-team.atlassian.net"
 #JIRA_USERNAME="tore@kosli.com"
 #JIRA_API_TOKEN="xx"
 #JIRA_PROJECT_ID=10000
@@ -48,15 +48,14 @@ function create_release
 {
     local -r projectId=$1; shift
     local -r releaseName=$1; shift
+    local -r startDate=$(date -u "+%Y-%m-%d")
 
-    local -r url="${JIRA_BASE_API}/rest/api/3/version"
+    local -r url="${JIRA_BASE_URL}/rest/api/3/version"
     local -r data='{
-         "description": "An excellent version",
+         "description": "Release '${releaseName}'",
          "name": "'${releaseName}'",
          "projectId": '${projectId}',
-         "approvers": [{
-             "accountId": "'${approverId}'"
-         }]
+         "startDate": "'${startDate}'"
     }'
     loud_curl_jira POST "${url}" "${data}"
 }
@@ -65,7 +64,7 @@ function get_current_release_candidate
 {
     local -r projectId=$1; shift
 
-    local -r url="${JIRA_BASE_API}/rest/api/3/project/${projectId}/version?status=unreleased"
+    local -r url="${JIRA_BASE_URL}/rest/api/3/project/${projectId}/version?status=unreleased"
     loud_curl_jira GET "${url}" {}
 }
 
@@ -73,7 +72,7 @@ function get_release
 {
     local -r releaseId=$1; shift
 
-    local -r url="${JIRA_BASE_API}/rest/api/3/version/${releaseId}?expand=approvers"
+    local -r url="${JIRA_BASE_URL}/rest/api/3/version/${releaseId}?expand=approvers"
     loud_curl_jira GET "${url}" {}
 }
 
@@ -84,7 +83,7 @@ function add_approver_to_release
     local -r approverId=$1; shift
     local -r releaseId=$1; shift
 
-    local -r url="${JIRA_BASE_API}/rest/api/3/version/${releaseId}"
+    local -r url="${JIRA_BASE_URL}/rest/api/3/version/${releaseId}"
     local -r data='{
         "approvers": [{
             "accountId": "'${approverId}'"
@@ -97,7 +96,7 @@ function add_issue_to_release() {
     local -r issueKey=$1; shift
     local -r releaseId=$1; shift
 
-    local -r url="${JIRA_BASE_API}/rest/api/3/issue/${issueKey}"
+    local -r url="${JIRA_BASE_URL}/rest/api/3/issue/${issueKey}"
     local -r data='{
         "fields": {
             "fixVersions": [{
@@ -111,14 +110,14 @@ function add_issue_to_release() {
 function get_issue {
     local -r issueKey=$1; shift
 
-    local -r url="${JIRA_BASE_API}/rest/api/3/issue/${issueKey}"
+    local -r url="${JIRA_BASE_URL}/rest/api/3/issue/${issueKey}"
     loud_curl_jira GET "${url}" {}
 }
 
-RELEASE_NAME=2025.02.20-r1
+#RELEASE_NAME=2025.02.20-r1
 #get_current_release_candidate ${JIRA_PROJECT_ID}
 #create_release ${JIRA_PROJECT_ID} ${RELEASE_NAME}
 #get_release 10033
-get_issue OPS-5
+#get_issue OPS-5
 #add_issue_to_release OPS-5 10033
 #add_approver_to_release ${JIRA_APPROVER_ID} 10033

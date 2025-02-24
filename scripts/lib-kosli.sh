@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-export KOSLI_ORG=kosli-public
-export KOSLI_API_TOKEN="xx"
-KOSLI_ENV_STAGING=jira-integration-example-staging
-KOSLI_ENV_PROD=jira-integration-example-prod
-KOSLI_FLOW_FRONTEND=jira-example-frontend
-KOSLI_FLOW_BACKEND=jira-example-backend
+#export KOSLI_ORG=kosli-public
+#export KOSLI_API_TOKEN="xx"
+#KOSLI_ENV_STAGING=jira-integration-example-staging
+#KOSLI_ENV_PROD=jira-integration-example-prod
+#KOSLI_FLOW_FRONTEND=jira-example-frontend
+#KOSLI_FLOW_BACKEND=jira-example-backend
 
 function loud_curl
 {
@@ -83,8 +83,7 @@ function get_jira_issue_keys_from_trail
     local -r trailName=$1; shift
 
     local -r url="https://app.kosli.com/api/v2/attestations/${KOSLI_ORG}/${flowName}/trail/${trailName}/jira-ticket"
-    set -o pipefail
-    loud_curl_kosli GET "${url}" {} | jq -r '.[].jira_results[].issue_id'
+    loud_curl_kosli GET "${url}" {} | jq -r '.[].jira_results[] | select(.issue_exists == true) | .issue_id'
 }
 
 function get_all_jira_issue_keys_for_commits
@@ -143,15 +142,16 @@ function get_artifact_flow_commit_mapping_json
 function get_issue_keys_between_staging_and_prod
 {
     commits=$(get_commits_between_staging_and_prod ${KOSLI_ENV_STAGING} ${KOSLI_ENV_PROD})
+    echo "Commits between staging and prod: ${commits}" >&2
     issueKeys=""
     keys=$(get_all_jira_issue_keys_for_commits ${KOSLI_FLOW_FRONTEND} "${commits}")
     issueKeys+=" ${keys}"
     keys=$(get_all_jira_issue_keys_for_commits ${KOSLI_FLOW_BACKEND} "${commits}")
     issueKeys+=" ${keys}"
-    echo ${issueKeys} | tr ' ' '\n' | sort -u
+    echo ${issueKeys} | tr ' ' '\n' | sort -u | tr '\n' ' '
 }
 
-get_issue_keys_between_staging_and_prod
+#get_issue_keys_between_staging_and_prod
 
 #artifactFlowMapping=$(get_artifact_flow_commit_mapping_json ${KOSLI_ENV_STAGING} ${KOSLI_ENV_PROD})
 #
