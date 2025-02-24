@@ -83,7 +83,6 @@ function get_jira_issue_keys_from_trail
     local -r trailName=$1; shift
 
     local -r url="https://app.kosli.com/api/v2/attestations/${KOSLI_ORG}/${flowName}/trail/${trailName}/jira-ticket"
-    set -o pipefail
     loud_curl_kosli GET "${url}" {} | jq -r '.[].jira_results[].issue_id'
 }
 
