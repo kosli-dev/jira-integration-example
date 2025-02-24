@@ -143,12 +143,13 @@ function get_artifact_flow_commit_mapping_json
 function get_issue_keys_between_staging_and_prod
 {
     commits=$(get_commits_between_staging_and_prod ${KOSLI_ENV_STAGING} ${KOSLI_ENV_PROD})
+    echo "Commits between staging and prod: ${commits}" >&2
     issueKeys=""
     keys=$(get_all_jira_issue_keys_for_commits ${KOSLI_FLOW_FRONTEND} "${commits}")
     issueKeys+=" ${keys}"
     keys=$(get_all_jira_issue_keys_for_commits ${KOSLI_FLOW_BACKEND} "${commits}")
     issueKeys+=" ${keys}"
-    echo ${issueKeys} | tr ' ' '\n' | sort -u
+    echo ${issueKeys} | tr ' ' '\n' | sort -u | tr '\n' ' '
 }
 
 #get_issue_keys_between_staging_and_prod
