@@ -115,10 +115,10 @@ function get_issue {
     loud_curl_jira GET "${url}" {}
 }
 
-RELEASE_NAME=2025.02.20-r1
+#RELEASE_NAME=2025.02.20-r1
 #get_current_release_candidate ${JIRA_PROJECT_ID}
 #create_release ${JIRA_PROJECT_ID} ${RELEASE_NAME}
 #get_release 10033
-get_issue OPS-5
+#get_issue OPS-5
 #add_issue_to_release OPS-5 10033
 #add_approver_to_release ${JIRA_APPROVER_ID} 10033
