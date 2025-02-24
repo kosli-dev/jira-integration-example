@@ -33,7 +33,7 @@ jobs:
           source scripts/lib-jira.sh
           source scripts/lib-kosli.sh
           
-          # Check if a release already exists, if so we fail
+#           Check if a release already exists, if so we fail
 #          CURRENT_REL_JSON=$(get_CURRENT_REL_candidate ${{ env.JIRA_PROJECT_ID }})
 #          CURRENT_REL=$(echo "${CURRENT_REL_JSON}" | jq .values)
 #          if [ "${CURRENT_REL}" != "[]" ]; then
@@ -41,7 +41,7 @@ jobs:
 #            exit 1
 #          fi
 
-          # Create the release and get the release ID
+#           Create the release and get the release ID
 #          TIMESTAMP=$(date -u "+%Y-%m-%d-%H-%M-%S")
 #          CREATE_RESULT_JSON=$(create_release ${{ env.JIRA_PROJECT_ID }} ${TIMESTAMP})
 #          RELEASE_ID=$(echo "${CREATE_RESULT_JSON}" | jq .id)
