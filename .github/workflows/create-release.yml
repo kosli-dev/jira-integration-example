@@ -28,7 +28,10 @@ jobs:
         run: |
           set -x
           source scripts/lib-jira.sh
-          current_release=$(get_current_release_candidate ${{ env.JIRA_PROJECT_ID }} | jq '.values')
+          current_release_json=$(get_current_release_candidate ${{ env.JIRA_PROJECT_ID }})
+          echo "${current_release_json}" | jq .
+          current_release=$(echo "${current_release_json}" | jq .values)
+          echo cr=$current_release
           if [ "${current_release}" != "[]" ]; then
             echo "Release candidate already exist: ${current_release}"
             exit 1
