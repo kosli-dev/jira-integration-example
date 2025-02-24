@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-export KOSLI_ORG=kosli-public
-export KOSLI_API_TOKEN="xx"
-KOSLI_ENV_STAGING=jira-integration-example-staging
-KOSLI_ENV_PROD=jira-integration-example-prod
-KOSLI_FLOW_FRONTEND=jira-example-frontend
-KOSLI_FLOW_BACKEND=jira-example-backend
+#export KOSLI_ORG=kosli-public
+#export KOSLI_API_TOKEN="xx"
+#KOSLI_ENV_STAGING=jira-integration-example-staging
+#KOSLI_ENV_PROD=jira-integration-example-prod
+#KOSLI_FLOW_FRONTEND=jira-example-frontend
+#KOSLI_FLOW_BACKEND=jira-example-backend
 
 function loud_curl
 {
@@ -151,7 +151,7 @@ function get_issue_keys_between_staging_and_prod
     echo ${issueKeys} | tr ' ' '\n' | sort -u
 }
 
-get_issue_keys_between_staging_and_prod
+#get_issue_keys_between_staging_and_prod
 
 #artifactFlowMapping=$(get_artifact_flow_commit_mapping_json ${KOSLI_ENV_STAGING} ${KOSLI_ENV_PROD})
 #
