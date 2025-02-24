@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-JIRA_BASE_API="https://kosli-team.atlassian.net"
-JIRA_USERNAME="tore@kosli.com"
-JIRA_API_TOKEN="xx"
-JIRA_PROJECT_ID=10000
-JIRA_APPROVER_ID="11111111111"
+#JIRA_BASE_API="https://kosli-team.atlassian.net"
+#JIRA_USERNAME="tore@kosli.com"
+#JIRA_API_TOKEN="xx"
+#JIRA_PROJECT_ID=10000
+#JIRA_APPROVER_ID="11111111111"
 
 function loud_curl
 {
