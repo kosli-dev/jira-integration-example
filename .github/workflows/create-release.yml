@@ -28,20 +28,13 @@ jobs:
         run: |
           set -x
           source scripts/lib-jira.sh
-          sleep 1
-          echo xxx the source was done
-          sleep 0.5
-          get_issue OPS-5
-          sleep 1
-          echo xxxx after get issue
-#          sleep 0.5
-#          current_release_json=$(get_current_release_candidate ${{ env.JIRA_PROJECT_ID }})
-#          echo "${current_release_json}" | jq .
-#          current_release=$(echo "${current_release_json}" | jq .values)
-#          echo cr=$current_release
-#          if [ "${current_release}" != "[]" ]; then
-#            echo "Release candidate already exist: ${current_release}"
-#            exit 1
-#          fi
-#          TIMESTAMP=$(date -u "+%Y-%m-%d-%H-%M-%S")
-#          create_release ${{ env.JIRA_PROJECT_ID }} ${TIMESTAMP}
+          current_release_json=$(get_current_release_candidate ${{ env.JIRA_PROJECT_ID }})
+          echo "${current_release_json}" | jq .
+          current_release=$(echo "${current_release_json}" | jq .values)
+          echo cr=$current_release
+          if [ "${current_release}" != "[]" ]; then
+            echo "Release candidate already exist: ${current_release}"
+            exit 1
+          fi
+          TIMESTAMP=$(date -u "+%Y-%m-%d-%H-%M-%S")
+          create_release ${{ env.JIRA_PROJECT_ID }} ${TIMESTAMP}
