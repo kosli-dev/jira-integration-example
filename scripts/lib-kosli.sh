@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 export KOSLI_ORG=kosli-public
-export KOSLI_API_TOKEN=xx
+export KOSLI_API_TOKEN="xx"
 KOSLI_ENV_STAGING=jira-integration-example-staging
 KOSLI_ENV_PROD=jira-integration-example-prod
 KOSLI_FLOW_FRONTEND=jira-example-frontend
@@ -140,15 +140,18 @@ function get_artifact_flow_commit_mapping_json
       ]'
 }
 
-COMMITS=$(get_commits_between_staging_and_prod ${KOSLI_ENV_STAGING} ${KOSLI_ENV_PROD})
-ISSUE_KEYS=""
-KEYS=$(get_all_jira_issue_keys_for_commits ${KOSLI_FLOW_FRONTEND} "${COMMITS}")
-ISSUE_KEYS+=" $KEYS"
-KEYS=$(get_all_jira_issue_keys_for_commits ${KOSLI_FLOW_BACKEND} "${COMMITS}")
-ISSUE_KEYS+=" $KEYS"
-ISSUE_KEYS=$(echo $ISSUE_KEYS | tr ' ' '\n' | sort -u)
+function get_issue_keys_between_staging_and_prod
+{
+    commits=$(get_commits_between_staging_and_prod ${KOSLI_ENV_STAGING} ${KOSLI_ENV_PROD})
+    issueKeys=""
+    keys=$(get_all_jira_issue_keys_for_commits ${KOSLI_FLOW_FRONTEND} "${commits}")
+    issueKeys+=" ${keys}"
+    keys=$(get_all_jira_issue_keys_for_commits ${KOSLI_FLOW_BACKEND} "${commits}")
+    issueKeys+=" ${keys}"
+    echo ${issueKeys} | tr ' ' '\n' | sort -u
+}
 
-echo $ISSUE_KEYS
+get_issue_keys_between_staging_and_prod
 
 #artifactFlowMapping=$(get_artifact_flow_commit_mapping_json ${KOSLI_ENV_STAGING} ${KOSLI_ENV_PROD})
 #
