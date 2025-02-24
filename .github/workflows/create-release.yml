@@ -35,11 +35,12 @@ jobs:
             ${{ env.KOSLI_CLI_VERSION }}
 
       - name:
-        run: |
+        run: |          
           source scripts/lib-jira.sh
           source scripts/lib-kosli.sh
           RELEASE_ID=10099
 
+          set -x
           JIRA_KEYS=$(get_issue_keys_between_staging_and_prod)
           echo "Found issues: ${JIRA_KEYS}"
           for JIRA_KEY in ${JIRA_KEYS}; do 
