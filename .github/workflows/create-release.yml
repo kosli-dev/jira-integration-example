@@ -40,7 +40,7 @@ jobs:
           source scripts/lib-kosli.sh
 
           # Fail if release already exists
-          CURRENT_REL_JSON=$(get_CURRENT_REL_candidate ${{ env.JIRA_PROJECT_ID }})
+          CURRENT_REL_JSON=$(get_current_release_candidate ${{ env.JIRA_PROJECT_ID }})
           CURRENT_REL=$(echo "${CURRENT_REL_JSON}" | jq .values)
           if [ "${CURRENT_REL}" != "[]" ]; then
             echo "Release candidate already exist: ${CURRENT_REL}"
