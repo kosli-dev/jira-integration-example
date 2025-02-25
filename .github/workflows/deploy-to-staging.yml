@@ -50,13 +50,15 @@ jobs:
         run: |
           COMMIT_SHA=$(jq -r '.[] | select(.name == "frontend") | .git_commit' /tmp/dev-env.json)
           set -x
+          echo 
           TAG="running-staging-frontend"
           if git rev-parse ${TAG} >/dev/null 2>&1; then
             git tag -d ${TAG}
           	git push --delete origin ${TAG}
           fi
           git tag ${TAG} ${COMMIT_SHA}
-          git push origin ${TAG}
+          git push https://x-access-token:${GH_TOKEN}@github.com/kosli-dev/jira-integration-example.git ${TAG}
+          #git push origin ${TAG}
           echo "Deployed frontend commit ${COMMIT_SHA}"
 
       - name: Deploy backend
