@@ -1,0 +1,62 @@
+name: Report Source Controls
+
+on:
+  push:
+
+
+env:
+  # kosli commands picks up org, flow, trail and api-token from these environment variables
+  KOSLI_ORG: kosli-public
+  KOSLI_FLOW: jira-example-source
+  KOSLI_TRAIL: ${{ github.sha }}
+  KOSLI_API_TOKEN: "${{ secrets.KOSLI_PUBLIC_API_TOKEN }}"
+  KOSLI_CLI_VERSION: "2.11.8"
+  KOSLI_TEMPLATE_FILE: "kosli-source-template.yml"
+  # KOSLI_DRY_RUN: true
+  JIRA_BASE_URL: "https://kosli-team.atlassian.net"
+  JIRA_USERNAME: ${{ secrets.KOSLI_JIRA_USERNAME }}
+  JIRA_API_TOKEN: ${{ secrets.KOSLI_JIRA_API_TOKEN }}
+
+jobs:
+  begin-trail:
+    name: Begin trail
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Begin trail
+        if: ${{ github.ref == 'refs/heads/main' }}
+        uses: ./.github/workflows/composites/kosli-begin-trail
+        with:
+          kosli-trail: ${{ env.KOSLI_TRAIL }}
+          kosli-template-file: ${{ env.KOSLI_TEMPLATE_FILE }}
+
+  jira-ticket:
+    name: Jira ticket
+    needs: [begin-trail]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Attest jira ticket
+        uses: ./.github/workflows/composites/kosli-attest-jira
+        with:
+          jira-base-url: ${{ env.JIRA_BASE_URL }}
+          jira-username: ${{ env.JIRA_USERNAME }}
+          jira-api-token: ${{ env.JIRA_API_TOKEN }}
+          jira-issue-fields: "summary,description"
+          report-to-kosli: ${{ github.ref == 'refs/heads/main' }}
+
+  pull-request:
+    name: Pull-request
+    if: ${{ github.ref == 'refs/heads/main' }}
+    needs: [begin-trail]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Attest GitHub pull-request
+        uses: ./.github/workflows/composites/kosli-attest-pullrequest
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          assert: true
