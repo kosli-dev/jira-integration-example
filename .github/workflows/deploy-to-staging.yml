@@ -35,36 +35,69 @@ jobs:
 
       - name: Get what SW is running in dev
         run: |
-          set -x
           source scripts/lib-kosli.sh
           get_current_running_env_json ${{ env.KOSLI_ENV_DEV }} > /tmp/dev-env.json
+
+      - name: Get frontend tag
+        run: |
+          COMMIT_SHA=$(jq -r '.[] | select(.name == "frontend") | .git_commit' /tmp/dev-env.json)
+          echo "COMMIT_SHA_FRONTEND=$COMMIT_SHA" >> "$GITHUB_ENV"
 
       - name: Deploy frontend
         # We do not have a real repo so we just tag the git repo and then the
         # simulate-environment-reporting-staging.yml will start reporting that
         # this environment is now running.
+        env:
+          GH_TOKEN: ${{ secrets.GH_UPDATE_TAG_TOKEN }}
+          OWNER: "kosli-dev"
+          REPO: "jira-integration-example"
+          TAG: "running-staging-frontend"
+          COMMIT_SHA: ${{ env.COMMIT_SHA_FRONTEND }}
         run: |
-          COMMIT_SHA=$(jq -r '.[] | select(.name == "frontend") | .git_commit' /tmp/dev-env.json)
-          TAG="running-staging-frontend"
-          if git rev-parse ${TAG} >/dev/null 2>&1; then
-            git tag -d ${TAG}
-          	git push --delete origin ${TAG}
+          API_URL="https://api.github.com/repos/${OWNER}/${REPO}/git/refs/tags/${TAG}"
+          
+          # Check if the tag exists
+          STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github.v3+json" "${API_URL}")
+
+          if [[ "$STATUS_CODE" == "200" ]]; then
+            echo "Tag ${TAG} exists, updating..."
+            curl -X PATCH -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github.v3+json" \
+              -d "{\"sha\": \"${COMMIT_SHA}\", \"force\": true}" "${API_URL}"
+          else
+            echo "Tag ${TAG} does not exist, creating..."
+            curl -X POST -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github.v3+json" \
+              -d "{\"ref\": \"refs/tags/${TAG}\", \"sha\": \"${COMMIT_SHA}\"}" "https://api.github.com/repos/${OWNER}/${REPO}/git/refs"
           fi
-          git tag ${TAG} ${COMMIT_SHA}
-          git push origin ${TAG}
           echo "Deployed frontend commit ${COMMIT_SHA}"
+
+      - name: Get backend tag
+        run: |
+          COMMIT_SHA=$(jq -r '.[] | select(.name == "backend") | .git_commit' /tmp/dev-env.json)
+          echo "COMMIT_SHA_BACKEND=$COMMIT_SHA" >> "$GITHUB_ENV"
 
       - name: Deploy backend
         # We do not have a real repo so we just tag the git repo and then the
         # simulate-environment-reporting-staging.yml will start reporting that
         # this environment is now running.
+        env:
+          GH_TOKEN: ${{ secrets.GH_UPDATE_TAG_TOKEN }}
+          OWNER: "kosli-dev"
+          REPO: "jira-integration-example"
+          TAG: "running-staging-backend"
+          COMMIT_SHA: ${{ env.COMMIT_SHA_BACKEND }}
         run: |
-          COMMIT_SHA=$(jq -r '.[] | select(.name == "backend") | .git_commit' /tmp/dev-env.json)
-          TAG="running-staging-backend"
-          if git rev-parse ${TAG} >/dev/null 2>&1; then
-            git tag -d ${TAG}
-          	git push --delete origin ${TAG}
+          API_URL="https://api.github.com/repos/${OWNER}/${REPO}/git/refs/tags/${TAG}"
+          
+          # Check if the tag exists
+          STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github.v3+json" "${API_URL}")
+
+          if [[ "$STATUS_CODE" == "200" ]]; then
+            echo "Tag ${TAG} exists, updating..."
+            curl -X PATCH -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github.v3+json" \
+              -d "{\"sha\": \"${COMMIT_SHA}\", \"force\": true}" "${API_URL}"
+          else
+            echo "Tag ${TAG} does not exist, creating..."
+            curl -X POST -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github.v3+json" \
+              -d "{\"ref\": \"refs/tags/${TAG}\", \"sha\": \"${COMMIT_SHA}\"}" "https://api.github.com/repos/${OWNER}/${REPO}/git/refs"
           fi
-          git tag ${TAG} ${COMMIT_SHA}
-          git push origin ${TAG}
           echo "Deployed backend commit ${COMMIT_SHA}"
