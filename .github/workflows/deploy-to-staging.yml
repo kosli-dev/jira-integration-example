@@ -55,6 +55,7 @@ jobs:
           OWNER: "kosli-dev"
           REPO: "jira-integration-example"
           TAG: "running-staging-frontend"
+          COMMIT_SHA: ${{ env.COMMIT_SHA_FRONTEND }}
         run: |
           API_URL="https://api.github.com/repos/${OWNER}/${REPO}/git/refs/tags/${TAG}"
           
