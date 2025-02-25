@@ -35,8 +35,12 @@ jobs:
 
       - name: Get what SW is running in dev
         run: |
+          set -x
           source scripts/lib-kosli.sh
           DEV_ENV_JSON=$(get_current_running_env_json ${{ env.KOSLI_ENV_DEV }})
+          echo START
+          echo " ${DEV_ENV_JSON}"
+          echo DONE
           echo "DEV_ENV_JSON=${DEV_ENV_JSON}" >> $GITHUB_ENV
           
 
