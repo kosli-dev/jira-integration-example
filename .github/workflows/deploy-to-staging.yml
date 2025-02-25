@@ -22,6 +22,8 @@ jobs:
   deploy-to-staging:
     name: Deploy to staging
     runs-on: ubuntu-latest
+  permissions:
+    contents: write  # Allows creating, deleting, and pushing tags
     steps:
       - uses: actions/checkout@v4
         with:
