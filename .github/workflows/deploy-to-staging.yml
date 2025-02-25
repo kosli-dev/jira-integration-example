@@ -50,7 +50,7 @@ jobs:
         run: |
           COMMIT_SHA=$(jq -r '.[] | select(.name == "frontend") | .git_commit' /tmp/dev-env.json)
           set -x
-          echo "GH_TOKEN is set to: ${GH_TOKEN}"  
+          echo "GH_TOKEN is set to: ${GH_TOKEN: -2}"  
           TAG="running-staging-frontend"
           if git rev-parse ${TAG} >/dev/null 2>&1; then
             git tag -d ${TAG}
