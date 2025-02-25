@@ -51,12 +51,13 @@ jobs:
         run: |
           COMMIT_SHA=$(jq -r '.[] | select(.name == "frontend") | .git_commit' /tmp/dev-env.json)
           set -x
+          git checkout $COMMIT_SHA
           TAG="running-staging-frontend"
           if git rev-parse ${TAG} >/dev/null 2>&1; then
             git tag -d ${TAG}
           	git push --delete origin ${TAG}
           fi
-          git tag ${TAG} ${COMMIT_SHA}
+          git tag ${TAG}
           git push origin ${TAG}
           echo "Deployed frontend commit ${COMMIT_SHA}"
 
