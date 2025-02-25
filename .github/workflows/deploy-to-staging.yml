@@ -51,7 +51,7 @@ jobs:
         # simulate-environment-reporting-staging.yml will start reporting that
         # this environment is now running.
         env:
-#          GH_TOKEN: ${{ secrets.GH_UPDATE_TAG_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_UPDATE_TAG_TOKEN }}
           OWNER: "kosli-dev"
           REPO: "jira-integration-example"
           TAG: "running-staging-frontend"
