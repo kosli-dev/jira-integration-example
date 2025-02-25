@@ -2,6 +2,7 @@
 
 #export KOSLI_ORG=kosli-public
 #export KOSLI_API_TOKEN="xx"
+#KOSLI_ENV_DEV=jira-integration-example-dev
 #KOSLI_ENV_STAGING=jira-integration-example-staging
 #KOSLI_ENV_PROD=jira-integration-example-prod
 #KOSLI_FLOW_FRONTEND=jira-example-frontend
@@ -49,7 +50,7 @@ function loud_curl_kosli
 function get_current_running_env_json
 {
     local -r envName=$1; shift
-    kosli get snapshot ${envName} --output json | jq  '[.artifacts[] | select(.annotation.now != 0)]'
+    kosli get snapshot ${envName} --output json | jq -r '[.artifacts[] | select(.annotation.now != 0)]'
 }
 
 function get_newest_commit_sha
@@ -150,7 +151,7 @@ function get_issue_keys_between_staging_and_prod
     issueKeys+=" ${keys}"
     echo ${issueKeys} | tr ' ' '\n' | sort -u | tr '\n' ' '
 }
-
+#get_current_running_env_json ${KOSLI_ENV_DEV}
 #get_issue_keys_between_staging_and_prod
 
 #artifactFlowMapping=$(get_artifact_flow_commit_mapping_json ${KOSLI_ENV_STAGING} ${KOSLI_ENV_PROD})
