@@ -20,7 +20,7 @@ env:
 
 jobs:
   deploy-to-staging:
-    name: Simulate deployment to staging
+    name: Deploy to staging
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -36,7 +36,7 @@ jobs:
       - name: Get what SW is running in dev
         run: |
           source scripts/lib-kosli.sh
-          DEV_ENV_JSON=$(get_current_running_env_json ${KOSLI_ENV_DEV})
+          DEV_ENV_JSON=$(get_current_running_env_json ${{ env.KOSLI_ENV_DEV }})
           echo "DEV_ENV_JSON=${DEV_ENV_JSON}" >> $GITHUB_ENV
           
 
