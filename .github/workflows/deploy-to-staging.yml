@@ -50,6 +50,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           COMMIT_SHA=$(jq -r '.[] | select(.name == "frontend") | .git_commit' /tmp/dev-env.json)
+          set -x
           TAG="running-staging-frontend"
           if git rev-parse ${TAG} >/dev/null 2>&1; then
             git tag -d ${TAG}
