@@ -57,7 +57,7 @@ jobs:
           	git push --delete origin ${TAG}
           fi
           git tag ${TAG} ${COMMIT_SHA}
-          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/kosli-dev/jira-integration-example.git
+          git remote set-url origin https://x-access-token:${{ secrets.GH_UPDATE_TAG_TOKEN }}@github.com/kosli-dev/jira-integration-example.git
           git push origin ${TAG}
 
           #git push https://x-access-token:${GH_TOKEN}@github.com/kosli-dev/jira-integration-example.git ${TAG}
