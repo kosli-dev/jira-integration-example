@@ -1,4 +1,4 @@
-name: Create release
+name: Create release candidate
 
 on:
   workflow_dispatch:
@@ -20,8 +20,8 @@ env:
 
 
 jobs:
-  create-candidate-if-does-not-exist:
-    name: Verify no candicate already exists
+  create-candidate:
+    name: Create candidate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -34,7 +34,7 @@ jobs:
           version:
             ${{ env.KOSLI_CLI_VERSION }}
 
-      - name:
+      - name: Create release candidate
         run: |          
           source scripts/lib-jira.sh
           source scripts/lib-kosli.sh
