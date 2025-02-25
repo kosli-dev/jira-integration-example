@@ -2,8 +2,7 @@ name: Report Source Controls
 
 on:
   push:
-    branches:
-      - master
+
 
 env:
   # kosli commands picks up org, flow, trail and api-token from these environment variables
