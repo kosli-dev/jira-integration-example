@@ -1,6 +1,6 @@
 version: 1
 artifacts:
   backend:
-    path: apps/backend
+    path: running/backend
   frontend:
-    path: apps/frontend
+    path: running/frontend

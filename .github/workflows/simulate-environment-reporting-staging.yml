@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: running-staging
+          fetch-depth: 0
 
       - name: Setup Kosli cli
         uses: kosli-dev/setup-cli-action@v2
@@ -34,5 +34,11 @@ jobs:
 
       - name: Report snapshot
         run: |
+          mkdir -p running
+          git checkout running-staging-frontend
+          cp -r apps/frontend running/
+          git checkout running-staging-backend
+          cp -r apps/backend running/
+          
           kosli snapshot paths ${{ env.KOSLI_ENV }} \
             --paths-file server-paths-file.yml

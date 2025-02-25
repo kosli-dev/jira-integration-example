@@ -1,10 +1,22 @@
 name: Deploy to Staging
 
 on:
-  push:
-    tags:
-      - staging-*
+  workflow_dispatch:
 
+env:
+  # kosli commands picks up org, flow, trail and api-token from these environment variables
+  KOSLI_ORG: kosli-public
+  KOSLI_API_TOKEN: "${{ secrets.KOSLI_PUBLIC_API_TOKEN }}"
+  KOSLI_CLI_VERSION: "2.11.8"
+  KOSLI_ENV_DEV: "jira-integration-example-dev"
+  KOSLI_ENV_STAGING: "jira-integration-example-staging"
+#  KOSLI_FLOW_FRONTEND: "jira-example-frontend"
+#  KOSLI_FLOW_BACKEND: "jira-example-backend"
+  # KOSLI_DRY_RUN: true
+#  JIRA_BASE_URL: "https://kosli-team.atlassian.net"
+#  JIRA_USERNAME: ${{ secrets.KOSLI_JIRA_USERNAME }}
+#  JIRA_API_TOKEN: ${{ secrets.KOSLI_JIRA_API_TOKEN }}
+#  JIRA_PROJECT_ID: 10000
 
 jobs:
   deploy-to-staging:
@@ -14,16 +26,46 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ github.ref_name }}  # Checks out the tag that triggered the workflow
 
-      - name: Tag repo
+      - name: Setup Kosli cli
+        uses: kosli-dev/setup-cli-action@v2
+        with:
+          version:
+            ${{ env.KOSLI_CLI_VERSION }}
+
+      - name: Get what SW is running in dev
+        run: |
+          source scripts/lib-kosli.sh
+          DEV_ENV_JSON=$(get_current_running_env_json ${KOSLI_ENV_DEV})
+          echo "DEV_ENV_JSON=${DEV_ENV_JSON}" >> $GITHUB_ENV
+          
+
+      - name: Deploy frontend
         # We do not have a real repo so we just tag the git repo and then the
         # simulate-environment-reporting-staging.yml will start reporting that
         # this environment is now running.
         run: |
-          if git rev-parse running-staging >/dev/null 2>&1; then
-            git tag -d running-staging;
-          	git push --delete origin running-staging;
+          COMMIT_SHA=$(echo "${{ env.DEV_ENV_JSON }}" | jq -r '.[] | select(.name == "frontend") | .git_commit')
+          TAG="running-staging-frontend"
+          if git rev-parse ${TAG} >/dev/null 2>&1; then
+            git tag -d ${TAG}
+          	git push --delete origin ${TAG}
           fi
-          git tag running-staging
-          git push origin running-staging
+          git tag ${TAG} ${COMMIT_SHA}
+          git push origin ${TAG}
+          echo "Deployed frontend commit ${COMMIT_SHA}"
+
+      - name: Deploy backend
+        # We do not have a real repo so we just tag the git repo and then the
+        # simulate-environment-reporting-staging.yml will start reporting that
+        # this environment is now running.
+        run: |
+          COMMIT_SHA=$(echo "${{ env.DEV_ENV_JSON }}" | jq -r '.[] | select(.name == "backend") | .git_commit')
+          TAG="running-staging-backend"
+          if git rev-parse ${TAG} >/dev/null 2>&1; then
+            git tag -d ${TAG}
+          	git push --delete origin ${TAG}
+          fi
+          git tag ${TAG} ${COMMIT_SHA}
+          git push origin ${TAG}
+          echo "Deployed backend commit ${COMMIT_SHA}"
