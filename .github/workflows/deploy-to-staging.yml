@@ -46,6 +46,8 @@ jobs:
         # We do not have a real repo so we just tag the git repo and then the
         # simulate-environment-reporting-staging.yml will start reporting that
         # this environment is now running.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           COMMIT_SHA=$(jq -r '.[] | select(.name == "frontend") | .git_commit' /tmp/dev-env.json)
           TAG="running-staging-frontend"
