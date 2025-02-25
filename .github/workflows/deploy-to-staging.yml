@@ -35,7 +35,6 @@ jobs:
 
       - name: Get what SW is running in dev
         run: |
-          set -x
           source scripts/lib-kosli.sh
           get_current_running_env_json ${{ env.KOSLI_ENV_DEV }} > /tmp/dev-env.json
 
