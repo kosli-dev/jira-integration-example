@@ -37,19 +37,14 @@ jobs:
         run: |
           set -x
           source scripts/lib-kosli.sh
-          DEV_ENV_JSON=$(get_current_running_env_json ${{ env.KOSLI_ENV_DEV }})
-          {
-            echo "DEV_ENV_JSON<<EOF"
-            echo "$DEV_ENV_JSON"
-            echo "EOF"
-          } >> "$GITHUB_ENV"          
+          get_current_running_env_json ${{ env.KOSLI_ENV_DEV }} > /tmp/dev-env.json
 
       - name: Deploy frontend
         # We do not have a real repo so we just tag the git repo and then the
         # simulate-environment-reporting-staging.yml will start reporting that
         # this environment is now running.
         run: |
-          COMMIT_SHA=$(echo "${{ env.DEV_ENV_JSON }}" | jq -r '.[] | select(.name == "frontend") | .git_commit')
+          COMMIT_SHA=$(jq -r '.[] | select(.name == "frontend") | .git_commit' /tmp/dev-env.json)
           TAG="running-staging-frontend"
           if git rev-parse ${TAG} >/dev/null 2>&1; then
             git tag -d ${TAG}
@@ -64,7 +59,7 @@ jobs:
         # simulate-environment-reporting-staging.yml will start reporting that
         # this environment is now running.
         run: |
-          COMMIT_SHA=$(echo "${{ env.DEV_ENV_JSON }}" | jq -r '.[] | select(.name == "backend") | .git_commit')
+          COMMIT_SHA=$(jq -r '.[] | select(.name == "backend") | .git_commit' /tmp/dev-env.json)
           TAG="running-staging-backend"
           if git rev-parse ${TAG} >/dev/null 2>&1; then
             git tag -d ${TAG}
