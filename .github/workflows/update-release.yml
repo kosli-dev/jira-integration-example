@@ -41,12 +41,15 @@ jobs:
 
           # Fail if release does not exists
           CURRENT_REL_JSON=$(get_current_release_candidate ${{ env.JIRA_PROJECT_ID }})
-          echo CURRENT_REL_JSON=$CURRENT_REL_JSON
+          echo "$CURRENT_REL_JSON" | jq
           CURRENT_REL=$(echo "${CURRENT_REL_JSON}" | jq .values)
+          echo "$CURRENT_REL" | jq
           if [ "${CURRENT_REL}" == "[]" ]; then
             echo "No release candidate exist: ${CURRENT_REL}"
             exit 1
           fi
+          
+#          RELEASE_ID=$(echo "${}"
           
 #          # Add all jira tickets between prod and staging
 #          JIRA_KEYS=$(get_issue_keys_between_staging_and_prod)
