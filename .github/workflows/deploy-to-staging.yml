@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write  # Allows creating, deleting, and pushing tags
-      workflows: write # Allows modifying workflow files
+      id-token: write
     steps:
       - uses: actions/checkout@v4
         with:
