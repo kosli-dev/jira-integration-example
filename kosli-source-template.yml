@@ -1,0 +1,7 @@
+version: 1
+trail:
+    attestations:
+        - name: jira-ticket
+          type: jira
+        - name: pull-request
+          type: pull_request
