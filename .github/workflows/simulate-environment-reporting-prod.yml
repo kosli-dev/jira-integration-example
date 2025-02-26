@@ -7,7 +7,7 @@ name: Report prod snapshot
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Runs at the start of every hour
+    - cron: '55 * * * *'  # Runs 5 minutes before the start of every hour
   workflow_dispatch:
 
 env:

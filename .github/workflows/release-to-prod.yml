@@ -1,0 +1,142 @@
+name: Release to Prod
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Runs at the start of every hour
+  workflow_dispatch:
+
+env:
+  # kosli commands picks up org, flow, trail and api-token from these environment variables
+  KOSLI_ORG: kosli-public
+  KOSLI_API_TOKEN: "${{ secrets.KOSLI_PUBLIC_API_TOKEN }}"
+  KOSLI_CLI_VERSION: "2.11.8"
+  KOSLI_ENV_DEV: "jira-integration-example-dev"
+  KOSLI_ENV_STAGING: "jira-integration-example-staging"
+#  KOSLI_FLOW_FRONTEND: "jira-example-frontend"
+#  KOSLI_FLOW_BACKEND: "jira-example-backend"
+  # KOSLI_DRY_RUN: true
+#  JIRA_BASE_URL: "https://kosli-team.atlassian.net"
+#  JIRA_USERNAME: ${{ secrets.KOSLI_JIRA_USERNAME }}
+#  JIRA_API_TOKEN: ${{ secrets.KOSLI_JIRA_API_TOKEN }}
+#  JIRA_PROJECT_ID: 10000
+
+jobs:
+  check-release-has-been-approved:
+    name: Check if we have a release candidate that has been approved
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for approved release
+        run: |
+          source scripts/lib-kosli.sh
+          
+          CURRENT_REL_JSON=$(get_current_release_candidate ${{ env.JIRA_PROJECT_ID }})
+          REL_VALUES_JSON=$(echo "${CURRENT_REL_JSON}" | jq .values)
+          if [ "${REL_VALUES_JSON}" == "[]" ]; then
+            echo "No release candidate exist"
+            exit 1
+          fi
+          RELEASE_ID=$(echo "${REL_VALUES_JSON}" |  jq -r '.[0].id')
+          APPROVERS_JSON=${get_approvers_in_release ${RELEASE_ID}}
+          
+          if echo "$APPROVERS_JSON" | jq -e 'length == 0'; then
+            echo "No approvers in release"
+            exit 2
+          fi
+          
+          if echo "$APPROVERS_JSON" | jq -e 'all(.status == "APPROVED")'; then
+            echo "APPROVED by all"
+            echo "$APPROVERS_JSON" | jq
+            exit 0
+          else
+            echo "Not all statuses are APPROVED"
+            echo "$APPROVERS_JSON" | jq
+            exit 3          
+          fi
+
+  deploy-to-prod:
+    name: Deploy to prod
+    needs: [check-release-has-been-approved]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Kosli cli
+        uses: kosli-dev/setup-cli-action@v2
+        with:
+          version:
+            ${{ env.KOSLI_CLI_VERSION }}
+
+      - name: Get what SW is running in staging
+        run: |
+          source scripts/lib-kosli.sh
+          get_current_running_env_json ${{ env.KOSLI_ENV_STAGING }} > /tmp/staging-env.json
+
+      - name: Get frontend tag
+        run: |
+          COMMIT_SHA=$(jq -r '.[] | select(.name == "frontend") | .git_commit' /tmp/staging-env.json)
+          echo "COMMIT_SHA_FRONTEND=$COMMIT_SHA" >> "$GITHUB_ENV"
+
+      - name: Deploy frontend
+        # We do not have a real repo so we just tag the git repo and then the
+        # simulate-environment-reporting-prod.yml will start reporting that
+        # this environment is now running.
+        env:
+          GH_TOKEN: ${{ secrets.GH_UPDATE_TAG_TOKEN }}
+          OWNER: "kosli-dev"
+          REPO: "jira-integration-example"
+          TAG: "running-prod-frontend"
+          COMMIT_SHA: ${{ env.COMMIT_SHA_FRONTEND }}
+        run: |
+          API_URL="https://api.github.com/repos/${OWNER}/${REPO}/git/refs/tags/${TAG}"
+          
+          # Check if the tag exists
+          STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github.v3+json" "${API_URL}")
+
+          if [[ "$STATUS_CODE" == "200" ]]; then
+            echo "Tag ${TAG} exists, updating..."
+            curl -X PATCH -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github.v3+json" \
+              -d "{\"sha\": \"${COMMIT_SHA}\", \"force\": true}" "${API_URL}"
+          else
+            echo "Tag ${TAG} does not exist, creating..."
+            curl -X POST -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github.v3+json" \
+              -d "{\"ref\": \"refs/tags/${TAG}\", \"sha\": \"${COMMIT_SHA}\"}" "https://api.github.com/repos/${OWNER}/${REPO}/git/refs"
+          fi
+          echo "Deployed frontend commit ${COMMIT_SHA}"
+
+      - name: Get backend tag
+        run: |
+          COMMIT_SHA=$(jq -r '.[] | select(.name == "backend") | .git_commit' /tmp/staging-env.json)
+          echo "COMMIT_SHA_BACKEND=$COMMIT_SHA" >> "$GITHUB_ENV"
+
+      - name: Deploy backend
+        # We do not have a real repo so we just tag the git repo and then the
+        # simulate-environment-reporting-prod.yml will start reporting that
+        # this environment is now running.
+        env:
+          GH_TOKEN: ${{ secrets.GH_UPDATE_TAG_TOKEN }}
+          OWNER: "kosli-dev"
+          REPO: "jira-integration-example"
+          TAG: "running-prod-backend"
+          COMMIT_SHA: ${{ env.COMMIT_SHA_BACKEND }}
+        run: |
+          API_URL="https://api.github.com/repos/${OWNER}/${REPO}/git/refs/tags/${TAG}"
+          
+          # Check if the tag exists
+          STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github.v3+json" "${API_URL}")
+
+          if [[ "$STATUS_CODE" == "200" ]]; then
+            echo "Tag ${TAG} exists, updating..."
+            curl -X PATCH -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github.v3+json" \
+              -d "{\"sha\": \"${COMMIT_SHA}\", \"force\": true}" "${API_URL}"
+          else
+            echo "Tag ${TAG} does not exist, creating..."
+            curl -X POST -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github.v3+json" \
+              -d "{\"ref\": \"refs/tags/${TAG}\", \"sha\": \"${COMMIT_SHA}\"}" "https://api.github.com/repos/${OWNER}/${REPO}/git/refs"
+          fi
+          echo "Deployed backend commit ${COMMIT_SHA}"

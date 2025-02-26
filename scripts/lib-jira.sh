@@ -76,6 +76,12 @@ function get_release
     loud_curl_jira GET "${url}" {}
 }
 
+function get_approvers_in_release
+{
+    local -r releaseId=$1; shift
+    get_release ${releaseId} | jq '.approvers'
+}
+
 
 function get_issues_in_release
 {
