@@ -36,24 +36,24 @@ jobs:
           CURRENT_REL_JSON=$(get_current_release_candidate ${{ env.JIRA_PROJECT_ID }})
           REL_VALUES_JSON=$(echo "${CURRENT_REL_JSON}" | jq .values)
           if [ "${REL_VALUES_JSON}" == "[]" ]; then
-            echo "No release candidate exist" >&2; sleep 0.5
+            echo "No release candidate exist" >> $GITHUB_STEP_SUMMARY
             exit 1
           fi
           RELEASE_ID=$(echo "${REL_VALUES_JSON}" |  jq -r '.[0].id')
           APPROVERS_JSON=${get_approvers_in_release ${RELEASE_ID}}
           
           if echo "$APPROVERS_JSON" | jq -e 'length == 0'; then
-            echo "No approvers in release" >&2; sleep 0.5
+            echo "No approvers in release" >> $GITHUB_STEP_SUMMARY
             exit 2
           fi
           
           if echo "$APPROVERS_JSON" | jq -e 'all(.status == "APPROVED")'; then
-            echo "APPROVED by all" >&2
-            echo "$APPROVERS_JSON" | jq >&2; sleep 0.5
+            echo "APPROVED by all" >> $GITHUB_STEP_SUMMARY
+            echo "$APPROVERS_JSON" | jq >> $GITHUB_STEP_SUMMARY
             exit 0
           else
-            echo "Not all statuses are APPROVED" >&2
-            echo "$APPROVERS_JSON" | jq >&2; sleep 0.5
+            echo "Not all statuses are APPROVED" >> $GITHUB_STEP_SUMMARY
+            echo "$APPROVERS_JSON" | jq >> $GITHUB_STEP_SUMMARY
             exit 3
           fi
 
@@ -99,15 +99,15 @@ jobs:
           STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github.v3+json" "${API_URL}")
 
           if [[ "$STATUS_CODE" == "200" ]]; then
-            echo "Tag ${TAG} exists, updating..." >&2
+            echo "Tag ${TAG} exists, updating..." >> $GITHUB_STEP_SUMMARY
             curl -X PATCH -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github.v3+json" \
               -d "{\"sha\": \"${COMMIT_SHA}\", \"force\": true}" "${API_URL}"
           else
-            echo "Tag ${TAG} does not exist, creating..." >&2
+            echo "Tag ${TAG} does not exist, creating..." >> $GITHUB_STEP_SUMMARY
             curl -X POST -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github.v3+json" \
               -d "{\"ref\": \"refs/tags/${TAG}\", \"sha\": \"${COMMIT_SHA}\"}" "https://api.github.com/repos/${OWNER}/${REPO}/git/refs"
           fi
-          echo "Deployed frontend commit ${COMMIT_SHA}" >&2; sleep 0.5
+          echo "Deployed frontend commit ${COMMIT_SHA}" >> $GITHUB_STEP_SUMMARY
 
       - name: Get backend tag
         run: |
@@ -131,12 +131,12 @@ jobs:
           STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github.v3+json" "${API_URL}")
 
           if [[ "$STATUS_CODE" == "200" ]]; then
-            echo "Tag ${TAG} exists, updating..." >&2
+            echo "Tag ${TAG} exists, updating..." >> $GITHUB_STEP_SUMMARY
             curl -X PATCH -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github.v3+json" \
               -d "{\"sha\": \"${COMMIT_SHA}\", \"force\": true}" "${API_URL}"
           else
-            echo "Tag ${TAG} does not exist, creating..." >&2
+            echo "Tag ${TAG} does not exist, creating..." >> $GITHUB_STEP_SUMMARY
             curl -X POST -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github.v3+json" \
               -d "{\"ref\": \"refs/tags/${TAG}\", \"sha\": \"${COMMIT_SHA}\"}" "https://api.github.com/repos/${OWNER}/${REPO}/git/refs"
           fi
-          echo "Deployed backend commit ${COMMIT_SHA}" >&2; sleep 0.5
+          echo "Deployed backend commit ${COMMIT_SHA}" >> $GITHUB_STEP_SUMMARY
