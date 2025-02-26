@@ -147,8 +147,8 @@ jobs:
           echo "Deployed backend commit ${COMMIT_SHA}" >> $GITHUB_STEP_SUMMARY
 
   set-to-released:
-    name: Set to released in Kira
-    needs: [check-approved-release, check-approved-release]
+    name: Set to released in Jira
+    needs: [check-approved-release, deploy-to-prod]
     runs-on: ubuntu-latest
     env:
       RELEASE_ID: ${{ needs.check-approved-release.outputs.release_id }}
