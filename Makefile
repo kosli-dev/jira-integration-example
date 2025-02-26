@@ -7,6 +7,10 @@ create_release_candidate:
 	gh workflow run create-release.yml --ref main
 
 
+update_release_candidate:
+	gh workflow run update-release.yml --ref main
+
+
 make update_tags:
 	git fetch --tags --force
 
