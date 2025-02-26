@@ -161,3 +161,24 @@ jobs:
         run: |
           source scripts/lib-jira.sh
           set_release_to_released ${RELEASE_ID}
+
+  attest-approval:
+    name: Attest approval
+    needs: [set-to-released]
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_ID: ${{ needs.check-approved-release.outputs.release_id }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Report approval to Kosli
+        run: |
+          source scripts/lib-jira.sh
+
+          get_release ${{ env.RELEASE_ID }} >> /tmp/jira-release.json
+          kosli attest generic \
+            --name release-approval \
+            --trail ${{ env.RELEASE_ID }} \
+            --user-data /tmp/jira-release.json
