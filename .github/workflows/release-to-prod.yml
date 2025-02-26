@@ -36,24 +36,24 @@ jobs:
           CURRENT_REL_JSON=$(get_current_release_candidate ${{ env.JIRA_PROJECT_ID }})
           REL_VALUES_JSON=$(echo "${CURRENT_REL_JSON}" | jq .values)
           if [ "${REL_VALUES_JSON}" == "[]" ]; then
-            echo "No release candidate exist" >&2
+            echo "No release candidate exist" >&2; sleep 0.5
             exit 1
           fi
           RELEASE_ID=$(echo "${REL_VALUES_JSON}" |  jq -r '.[0].id')
           APPROVERS_JSON=${get_approvers_in_release ${RELEASE_ID}}
           
           if echo "$APPROVERS_JSON" | jq -e 'length == 0'; then
-            echo "No approvers in release" >&2
+            echo "No approvers in release" >&2; sleep 0.5
             exit 2
           fi
           
           if echo "$APPROVERS_JSON" | jq -e 'all(.status == "APPROVED")'; then
             echo "APPROVED by all" >&2
-            echo "$APPROVERS_JSON" | jq >&2
+            echo "$APPROVERS_JSON" | jq >&2; sleep 0.5
             exit 0
           else
             echo "Not all statuses are APPROVED" >&2
-            echo "$APPROVERS_JSON" | jq >&2
+            echo "$APPROVERS_JSON" | jq >&2; sleep 0.5
             exit 3
           fi
 
@@ -107,7 +107,7 @@ jobs:
             curl -X POST -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github.v3+json" \
               -d "{\"ref\": \"refs/tags/${TAG}\", \"sha\": \"${COMMIT_SHA}\"}" "https://api.github.com/repos/${OWNER}/${REPO}/git/refs"
           fi
-          echo "Deployed frontend commit ${COMMIT_SHA}" >&2
+          echo "Deployed frontend commit ${COMMIT_SHA}" >&2; sleep 0.5
 
       - name: Get backend tag
         run: |
@@ -139,4 +139,4 @@ jobs:
             curl -X POST -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github.v3+json" \
               -d "{\"ref\": \"refs/tags/${TAG}\", \"sha\": \"${COMMIT_SHA}\"}" "https://api.github.com/repos/${OWNER}/${REPO}/git/refs"
           fi
-          echo "Deployed backend commit ${COMMIT_SHA}" >&2
+          echo "Deployed backend commit ${COMMIT_SHA}" >&2; sleep 0.5
