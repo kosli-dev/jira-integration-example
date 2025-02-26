@@ -62,6 +62,33 @@ jobs:
             exit 13
           fi
 
+  attest-approval:
+    name: Attest approval
+    needs: [check-approved-release]
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_ID: ${{ needs.check-approved-release.outputs.release_id }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Kosli cli
+        uses: kosli-dev/setup-cli-action@v2
+        with:
+          version:
+            ${{ env.KOSLI_CLI_VERSION }}
+
+      - name: Report approval to Kosli
+        run: |
+          source scripts/lib-jira.sh
+
+          get_release ${{ env.RELEASE_ID }} >> /tmp/jira-release.json
+          kosli attest generic \
+            --name release-approval \
+            --trail ${{ env.RELEASE_ID }} \
+            --user-data /tmp/jira-release.json
+
   deploy-to-prod:
     name: Deploy to prod
     needs: [check-approved-release]
@@ -148,7 +175,7 @@ jobs:
 
   set-to-released:
     name: Set to released in Jira
-    needs: [check-approved-release, deploy-to-prod]
+    needs: [check-approved-release, attest-approval, deploy-to-prod]
     runs-on: ubuntu-latest
     env:
       RELEASE_ID: ${{ needs.check-approved-release.outputs.release_id }}
@@ -161,24 +188,3 @@ jobs:
         run: |
           source scripts/lib-jira.sh
           set_release_to_released ${RELEASE_ID}
-
-  attest-approval:
-    name: Attest approval
-    needs: [check-approved-release, deploy-to-prod, set-to-released]
-    runs-on: ubuntu-latest
-    env:
-      RELEASE_ID: ${{ needs.check-approved-release.outputs.release_id }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Report approval to Kosli
-        run: |
-          source scripts/lib-jira.sh
-
-          get_release ${{ env.RELEASE_ID }} >> /tmp/jira-release.json
-          kosli attest generic \
-            --name release-approval \
-            --trail ${{ env.RELEASE_ID }} \
-            --user-data /tmp/jira-release.json
