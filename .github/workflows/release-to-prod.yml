@@ -12,16 +12,17 @@ env:
   KOSLI_CLI_VERSION: "2.11.8"
   KOSLI_ENV_DEV: "jira-integration-example-dev"
   KOSLI_ENV_STAGING: "jira-integration-example-staging"
+  KOSLI_ENV_PROD: "jira-integration-example-prod"
 #  KOSLI_FLOW_FRONTEND: "jira-example-frontend"
 #  KOSLI_FLOW_BACKEND: "jira-example-backend"
   # KOSLI_DRY_RUN: true
-#  JIRA_BASE_URL: "https://kosli-team.atlassian.net"
-#  JIRA_USERNAME: ${{ secrets.KOSLI_JIRA_USERNAME }}
-#  JIRA_API_TOKEN: ${{ secrets.KOSLI_JIRA_API_TOKEN }}
-#  JIRA_PROJECT_ID: 10000
+  JIRA_USERNAME: ${{ secrets.KOSLI_JIRA_USERNAME }}
+  JIRA_BASE_URL: "https://kosli-team.atlassian.net"
+  JIRA_API_TOKEN: ${{ secrets.KOSLI_JIRA_API_TOKEN }}
+  JIRA_PROJECT_ID: 10000
 
 jobs:
-  check-release-has-been-approved:
+  check-approved-release:
     name: Check if we have a release candidate that has been approved
     runs-on: ubuntu-latest
     steps:
@@ -30,36 +31,36 @@ jobs:
           fetch-depth: 0
 
       - name: Check for approved release
-        run: |
-          source scripts/lib-kosli.sh
+        run: |          
+          source scripts/lib-jira.sh
           
           CURRENT_REL_JSON=$(get_current_release_candidate ${{ env.JIRA_PROJECT_ID }})
           REL_VALUES_JSON=$(echo "${CURRENT_REL_JSON}" | jq .values)
           if [ "${REL_VALUES_JSON}" == "[]" ]; then
-            echo "No release candidate exist"
-            exit 1
+            echo "No release candidate exist" >> $GITHUB_STEP_SUMMARY
+            exit 11
           fi
           RELEASE_ID=$(echo "${REL_VALUES_JSON}" |  jq -r '.[0].id')
-          APPROVERS_JSON=${get_approvers_in_release ${RELEASE_ID}}
+          APPROVERS_JSON=$(get_approvers_in_release ${RELEASE_ID})
           
           if echo "$APPROVERS_JSON" | jq -e 'length == 0'; then
-            echo "No approvers in release"
-            exit 2
+            echo "No approvers in release" >> $GITHUB_STEP_SUMMARY
+            exit 12
           fi
           
           if echo "$APPROVERS_JSON" | jq -e 'all(.status == "APPROVED")'; then
-            echo "APPROVED by all"
-            echo "$APPROVERS_JSON" | jq
+            echo "APPROVED by all" >> $GITHUB_STEP_SUMMARY
+            echo "$APPROVERS_JSON" | jq >> $GITHUB_STEP_SUMMARY
             exit 0
           else
-            echo "Not all statuses are APPROVED"
-            echo "$APPROVERS_JSON" | jq
-            exit 3          
+            echo "Not all statuses are APPROVED" >> $GITHUB_STEP_SUMMARY
+            echo "$APPROVERS_JSON" | jq >> $GITHUB_STEP_SUMMARY
+            exit 13
           fi
 
   deploy-to-prod:
     name: Deploy to prod
-    needs: [check-release-has-been-approved]
+    needs: [check-approved-release]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -99,15 +100,15 @@ jobs:
           STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github.v3+json" "${API_URL}")
 
           if [[ "$STATUS_CODE" == "200" ]]; then
-            echo "Tag ${TAG} exists, updating..."
+            echo "Tag ${TAG} exists, updating..." >> $GITHUB_STEP_SUMMARY
             curl -X PATCH -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github.v3+json" \
               -d "{\"sha\": \"${COMMIT_SHA}\", \"force\": true}" "${API_URL}"
           else
-            echo "Tag ${TAG} does not exist, creating..."
+            echo "Tag ${TAG} does not exist, creating..." >> $GITHUB_STEP_SUMMARY
             curl -X POST -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github.v3+json" \
               -d "{\"ref\": \"refs/tags/${TAG}\", \"sha\": \"${COMMIT_SHA}\"}" "https://api.github.com/repos/${OWNER}/${REPO}/git/refs"
           fi
-          echo "Deployed frontend commit ${COMMIT_SHA}"
+          echo "Deployed frontend commit ${COMMIT_SHA}" >> $GITHUB_STEP_SUMMARY
 
       - name: Get backend tag
         run: |
@@ -131,12 +132,12 @@ jobs:
           STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github.v3+json" "${API_URL}")
 
           if [[ "$STATUS_CODE" == "200" ]]; then
-            echo "Tag ${TAG} exists, updating..."
+            echo "Tag ${TAG} exists, updating..." >> $GITHUB_STEP_SUMMARY
             curl -X PATCH -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github.v3+json" \
               -d "{\"sha\": \"${COMMIT_SHA}\", \"force\": true}" "${API_URL}"
           else
-            echo "Tag ${TAG} does not exist, creating..."
+            echo "Tag ${TAG} does not exist, creating..." >> $GITHUB_STEP_SUMMARY
             curl -X POST -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github.v3+json" \
               -d "{\"ref\": \"refs/tags/${TAG}\", \"sha\": \"${COMMIT_SHA}\"}" "https://api.github.com/repos/${OWNER}/${REPO}/git/refs"
           fi
-          echo "Deployed backend commit ${COMMIT_SHA}"
+          echo "Deployed backend commit ${COMMIT_SHA}" >> $GITHUB_STEP_SUMMARY
