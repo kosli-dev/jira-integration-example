@@ -150,14 +150,14 @@ jobs:
     name: Set to released in Kira
     needs: [check-approved-release, check-approved-release]
     runs-on: ubuntu-latest
+    envs:
+      RELEASE_ID: ${{ needs.check-approved-release.outputs.release_id }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Set to released
-        envs:
-          RELEASE_ID: ${{ needs.check-approved-release.outputs.release_id }}
         run: |
           source scripts/lib-jira.sh
           set_release_to_released ${RELEASE_ID}
