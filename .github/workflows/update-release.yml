@@ -41,16 +41,20 @@ jobs:
 
           # Fail if release does not exists
           CURRENT_REL_JSON=$(get_current_release_candidate ${{ env.JIRA_PROJECT_ID }})
-          echo CURRENT_REL_JSON=$CURRENT_REL_JSON
-          CURRENT_REL=$(echo "${CURRENT_REL_JSON}" | jq .values)
-          if [ "${CURRENT_REL}" == "[]" ]; then
-            echo "No release candidate exist: ${CURRENT_REL}"
+          echo "$CURRENT_REL_JSON" | jq
+          REL_VALUES_JSON=$(echo "${CURRENT_REL_JSON}" | jq .values)
+          if [ "${REL_VALUES_JSON}" == "[]" ]; then
+            echo "No release candidate exist: ${CURRENT_REL_JSON}"
             exit 1
           fi
           
-#          # Add all jira tickets between prod and staging
-#          JIRA_KEYS=$(get_issue_keys_between_staging_and_prod)
-#          echo "Found issues: ${JIRA_KEYS}"
-#          for JIRA_KEY in ${JIRA_KEYS}; do
-#            add_issue_to_release ${JIRA_KEY} ${RELEASE_ID}
-#          done
+          RELEASE_ID=$(echo "${REL_VALUES_JSON}" |  jq -r '.[0].id'
+          JIRA_KEYS_IN_REL=$(get_issue_keys_in_release ${RELEASE_ID})
+          ALL_JIRA_KEYS=$(get_issue_keys_between_staging_and_prod)
+          NEW_JIRA_KEYS=$(echo ${ALL_JIRA_KEYS} | tr ' ' '\n' | grep -v -w -F -e $(echo ${JIRA_KEYS_IN_REL} | tr ' ' '\n' | paste -sd "|" -))
+
+          # Add all new jira tickets between prod and staging
+          echo "Found new issues: ${NEW_JIRA_KEYS}"
+          for JIRA_KEY in ${NEW_JIRA_KEYS}; do
+            add_issue_to_release ${JIRA_KEY} ${RELEASE_ID}
+          done
