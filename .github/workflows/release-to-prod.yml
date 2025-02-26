@@ -33,7 +33,6 @@ jobs:
       - name: Check for approved release
         run: |          
           source scripts/lib-jira.sh
-          set -x
           
           CURRENT_REL_JSON=$(get_current_release_candidate ${{ env.JIRA_PROJECT_ID }})
           REL_VALUES_JSON=$(echo "${CURRENT_REL_JSON}" | jq .values)
