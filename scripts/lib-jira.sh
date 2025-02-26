@@ -77,6 +77,21 @@ function get_release
 }
 
 
+function get_issues_in_release
+{
+    local -r releaseId=$1; shift
+
+    local -r url="${JIRA_BASE_URL}/rest/api/3/search?jql=fixVersion='${releaseId}'"
+    loud_curl_jira GET "${url}" {}
+}
+
+function get_issue_keys_in_release
+{
+    local -r releaseId=$1; shift
+    get_issues_in_release ${releaseId} | jq -r '[.issues[].key] | join(" ")'
+}
+
+
 function add_approver_to_release
 {
     # Might be a problem https://community.developer.atlassian.com/t/add-approver-to-version-through-rest-api/76975

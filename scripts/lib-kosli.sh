@@ -5,8 +5,7 @@
 #KOSLI_ENV_DEV=jira-integration-example-dev
 #KOSLI_ENV_STAGING=jira-integration-example-staging
 #KOSLI_ENV_PROD=jira-integration-example-prod
-#KOSLI_FLOW_FRONTEND=jira-example-frontend
-#KOSLI_FLOW_BACKEND=jira-example-backend
+#KOSLI_FLOW_SOURCE=jira-example-source
 
 function loud_curl
 {
@@ -143,12 +142,8 @@ function get_artifact_flow_commit_mapping_json
 function get_issue_keys_between_staging_and_prod
 {
     commits=$(get_commits_between_staging_and_prod ${KOSLI_ENV_STAGING} ${KOSLI_ENV_PROD})
-    echo "Commits between staging and prod: ${commits}" >&2
-    issueKeys=""
-    keys=$(get_all_jira_issue_keys_for_commits ${KOSLI_FLOW_FRONTEND} "${commits}")
-    issueKeys+=" ${keys}"
-    keys=$(get_all_jira_issue_keys_for_commits ${KOSLI_FLOW_BACKEND} "${commits}")
-    issueKeys+=" ${keys}"
+    #echo "Commits between staging and prod: ${commits}" >&2
+    issueKeys=$(get_all_jira_issue_keys_for_commits ${KOSLI_FLOW_SOURCE} "${commits}")
     echo ${issueKeys} | tr ' ' '\n' | sort -u | tr '\n' ' '
 }
 #get_current_running_env_json ${KOSLI_ENV_DEV}
