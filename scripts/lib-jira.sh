@@ -60,6 +60,19 @@ function create_release
     loud_curl_jira POST "${url}" "${data}"
 }
 
+function set_release_to_released
+{
+    local -r releaseId=$1; shift
+    local -r releaseDate=$(date -u "+%Y-%m-%d")
+
+    local -r url="${JIRA_BASE_URL}/rest/api/3/version/${releaseId}"
+    local -r data='{
+         "releaseDate": "'${releaseDate}'",
+         "released": true
+    }'
+    loud_curl_jira PUT "${url}" "${data}"
+}
+
 function get_current_release_candidate
 {
     local -r projectId=$1; shift
