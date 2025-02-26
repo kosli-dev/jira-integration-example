@@ -2,6 +2,8 @@ name: Attest Source Controls
 
 on:
   push:
+    branches-ignore:
+      - 'refs/tags/*' # In this demo we use tags to simulate what SW is running, so ignore
 
 
 env:

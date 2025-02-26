@@ -3,6 +3,8 @@ name: Build Backend
 on:
   push:
     paths: ["apps/backend/**", ".github/workflows/build-backend.yml"]
+    branches-ignore:
+      - 'refs/tags/*' # In this demo we use tags to simulate what SW is running, so ignore
 
 env:
   # kosli commands picks up org, flow, trail and api-token from these environment variables
