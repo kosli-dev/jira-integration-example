@@ -21,7 +21,7 @@ env:
 #  JIRA_PROJECT_ID: 10000
 
 jobs:
-  check-release-has-been-approved:
+  check-approved-release:
     name: Check if we have a release candidate that has been approved
     runs-on: ubuntu-latest
     steps:
@@ -30,21 +30,22 @@ jobs:
           fetch-depth: 0
 
       - name: Check for approved release
-        run: |
+        run: |          
           source scripts/lib-jira.sh
+          set -x
           
           CURRENT_REL_JSON=$(get_current_release_candidate ${{ env.JIRA_PROJECT_ID }})
           REL_VALUES_JSON=$(echo "${CURRENT_REL_JSON}" | jq .values)
           if [ "${REL_VALUES_JSON}" == "[]" ]; then
             echo "No release candidate exist" >> $GITHUB_STEP_SUMMARY
-            exit 1
+            exit 11
           fi
           RELEASE_ID=$(echo "${REL_VALUES_JSON}" |  jq -r '.[0].id')
           APPROVERS_JSON=${get_approvers_in_release ${RELEASE_ID}}
           
           if echo "$APPROVERS_JSON" | jq -e 'length == 0'; then
             echo "No approvers in release" >> $GITHUB_STEP_SUMMARY
-            exit 2
+            exit 12
           fi
           
           if echo "$APPROVERS_JSON" | jq -e 'all(.status == "APPROVED")'; then
@@ -54,12 +55,12 @@ jobs:
           else
             echo "Not all statuses are APPROVED" >> $GITHUB_STEP_SUMMARY
             echo "$APPROVERS_JSON" | jq >> $GITHUB_STEP_SUMMARY
-            exit 3
+            exit 13
           fi
 
   deploy-to-prod:
     name: Deploy to prod
-    needs: [check-release-has-been-approved]
+    needs: [check-approved-release]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
