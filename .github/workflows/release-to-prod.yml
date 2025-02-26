@@ -42,7 +42,7 @@ jobs:
             exit 11
           fi
           RELEASE_ID=$(echo "${REL_VALUES_JSON}" |  jq -r '.[0].id')
-          APPROVERS_JSON=${get_approvers_in_release ${RELEASE_ID}}
+          APPROVERS_JSON=$(get_approvers_in_release ${RELEASE_ID})
           
           if echo "$APPROVERS_JSON" | jq -e 'length == 0'; then
             echo "No approvers in release" >> $GITHUB_STEP_SUMMARY
