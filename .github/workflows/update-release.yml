@@ -76,7 +76,7 @@ jobs:
           # Add all new jira issues between prod and staging
           echo "Adding Jira issues:"  >> $GITHUB_STEP_SUMMARY
           for JIRA_KEY in ${JIRA_KEYS_IN_KOSLI[@]}; do
-            if [[ ! " ${JIRA_KEYS_IN_REL[@]} " =~ " ${JIRA_KEY"} " ]]; then
+            if [[ ! " ${JIRA_KEYS_IN_REL[@]} " =~ " ${JIRA_KEY} " ]]; then
               add_issue_to_release ${JIRA_KEY} ${{ env.RELEASE_ID }}
               echo ${JIRA_KEY} >> $GITHUB_STEP_SUMMARY
             fi
