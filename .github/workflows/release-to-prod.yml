@@ -150,7 +150,7 @@ jobs:
     name: Set to released in Kira
     needs: [check-approved-release, check-approved-release]
     runs-on: ubuntu-latest
-    envs:
+    env:
       RELEASE_ID: ${{ needs.check-approved-release.outputs.release_id }}
     steps:
       - uses: actions/checkout@v4
