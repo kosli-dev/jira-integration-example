@@ -3,6 +3,8 @@ name: Build Frontend
 on:
   push:
     paths: ["apps/frontend/**", ".github/workflows/build-frontend.yml"]
+    branches-ignore:
+      - 'refs/tags/*' # In this demo we use tags to simulate what SW is running, so ignore
 
 env:
   # kosli commands picks up org, flow, trail and api-token from these environment variables
