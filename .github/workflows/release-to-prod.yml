@@ -164,7 +164,7 @@ jobs:
 
   attest-approval:
     name: Attest approval
-    needs: [set-to-released]
+    needs: [check-approved-release, deploy-to-prod, set-to-released]
     runs-on: ubuntu-latest
     env:
       RELEASE_ID: ${{ needs.check-approved-release.outputs.release_id }}
