@@ -76,8 +76,10 @@ jobs:
           source scripts/lib-jira.sh
           source scripts/lib-kosli.sh
           # Add all jira issues between prod and staging
-          JIRA_KEYS_IN_KOSLI=$(get_issue_keys_between_staging_and_prod)
+          JIRA_KEYS_IN_KOSLI=$(get_issue_keys_between_staging_and_prod ${KOSLI_ENV_STAGING} ${KOSLI_ENV_PROD} ${KOSLI_FLOW_SOURCE})
           echo "Adding Jira issues: ${JIRA_KEYS_IN_KOSLI}"  >> $GITHUB_STEP_SUMMARY
           for JIRA_KEY in ${JIRA_KEYS_IN_KOSLI}; do
             add_issue_to_release ${JIRA_KEY} ${{ env.RELEASE_ID }}
           done
+
+  
