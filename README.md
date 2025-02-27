@@ -162,3 +162,30 @@ We currently also have a `jira-example-release` flow, but this needs some improv
 
 https://app.kosli.com/kosli-public/flows/
 https://app.kosli.com/kosli-public/environments/
+
+
+# Things to improve
+
+Make the scripts a little more streamlined and make it easy to just give
+a list of apps/environments and loop over them.
+
+There is no CLI command to get the Jira-issues from Kosli, so I have to use curl.
+
+I report the Jira issue and pull request on both the source and build flows. A link
+from the source trail to build trail would be nice. But for proper linking we
+need to let a trail event on one trail trigger also a trail event on the other trails that it
+links to.
+
+A release is very important for the customer I think we should have that
+consept in Kosli. What do we need?
+- In this case we only want things in prod that has been released. Provenance 
+from a build to staging is not compliant.
+- A release consists of a set of versions of applications. We should record
+that combination.
+- Do we want to validate that the combination of software in a release is
+also the combination running in production?
+- Record who approved a release
+- Record the list of Jira issues included in release (also state if they want)
+- I do a lot of API calls to get the list of commits in a release, and then
+I loop over all the commits to collect all the Jira issues included. This
+gives me some complicated bash scripts, which is hard to maintain.
