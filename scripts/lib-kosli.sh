@@ -3,6 +3,14 @@
 # The following variable must be set before using this script
 # export KOSLI_ORG=kosli-public
 # export KOSLI_API_TOKEN="xx"
+# export DEBUG="true"
+
+function debug_log
+{
+    if [ "${DEBUG}" == "true" ]; then
+        echo -e "$@" >&2
+    fi
+}
 
 function loud_curl
 {
@@ -92,6 +100,7 @@ function get_all_jira_issue_keys_for_commits
     for commit in ${commits}; do
         issueKey=$(get_jira_issue_keys_from_trail $flowName $commit 2> /dev/null)
         issueKeys+=" $issueKey"
+        debug_log "Issues found: ${issueKey} From commit: ${commit}"
     done
     echo $issueKeys
 }
@@ -104,7 +113,7 @@ function get_issue_keys_between_staging_and_prod
     local -r flowName=$1; shift
 
     commits=$(get_commits_between_staging_and_prod ${stagingEnvName} ${prodEnvName})
-    #echo "Commits between staging and prod: ${commits}" >&2
+    debug_log "Commits between staging and prod:\n${commits}"
     issueKeys=$(get_all_jira_issue_keys_for_commits ${flowName} "${commits}")
     echo ${issueKeys} | tr ' ' '\n' | sort -u | tr '\n' ' '
 }

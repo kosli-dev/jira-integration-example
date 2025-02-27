@@ -4,6 +4,14 @@
 # export JIRA_BASE_URL="https://kosli-team.atlassian.net"
 # export JIRA_USERNAME="tore@kosli.com"
 # export JIRA_API_TOKEN="xx"
+# export DEBUG="true"
+
+function debug_log
+{
+    if [ "${DEBUG}" == "true" ]; then
+        echo -e "$@" >&2
+    fi
+}
 
 function loud_curl
 {
@@ -56,6 +64,7 @@ function create_release
          "projectId": '${projectId}',
          "startDate": "'${startDate}'"
     }'
+    debug_log "Created release:\n${data}"
     loud_curl_jira POST "${url}" "${data}"
 }
 
@@ -69,6 +78,7 @@ function set_release_to_released
          "releaseDate": "'${releaseDate}'",
          "released": true
     }'
+    debug_log "Set release ${releaseId} to released:\n${data}"
     loud_curl_jira PUT "${url}" "${data}"
 }
 
