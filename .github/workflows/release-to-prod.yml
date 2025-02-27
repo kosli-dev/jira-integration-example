@@ -14,8 +14,6 @@ env:
   KOSLI_ENV_DEV: "jira-integration-example-dev"
   KOSLI_ENV_STAGING: "jira-integration-example-staging"
   KOSLI_ENV_PROD: "jira-integration-example-prod"
-#  KOSLI_FLOW_FRONTEND: "jira-example-frontend"
-#  KOSLI_FLOW_BACKEND: "jira-example-backend"
   # KOSLI_DRY_RUN: true
   JIRA_USERNAME: ${{ secrets.KOSLI_JIRA_USERNAME }}
   JIRA_BASE_URL: "https://kosli-team.atlassian.net"

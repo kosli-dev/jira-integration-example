@@ -140,3 +140,25 @@ This job does the following:
 the 'running-prod-xxx' tags.
 - Set the Jira release to **Released**
 
+
+# Demo of complete process
+It is possible to run a demo of the complete process.
+Go to the [jira board](https://kosli-team.atlassian.net/jira/software/projects/OPS/boards/1)
+and add two new Jira-issues. The Jira-issues have issue-key like OPS-11 and OPS-12
+Go to the [release page](https://kosli-team.atlassian.net/projects/OPS?selectedItem=com.atlassian.jira.jira-projects-plugin%3Arelease-page)
+and make sure there are no **Unreleased** versions. If there is you have to archive them.
+
+Run the following script with the two IDs you created (currently only tested on Linux)
+```
+./scripts/demo-jira-release.sh OPS-11 OPS-12
+```
+The script takes approximately 10 minutes to run, and requires some interaction
+after approximately 8 minutes.
+
+You should be able to see the flows and environments in Kosli and also see that
+the release is updated in Jira.
+
+We currently also have a `jira-example-release` flow, but this needs some improvement.
+
+https://app.kosli.com/kosli-public/flows/
+https://app.kosli.com/kosli-public/environments/
