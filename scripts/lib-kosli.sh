@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 
-#export KOSLI_ORG=kosli-public
-#export KOSLI_API_TOKEN="xx"
-#KOSLI_ENV_DEV=jira-integration-example-dev
-#KOSLI_ENV_STAGING=jira-integration-example-staging
-#KOSLI_ENV_PROD=jira-integration-example-prod
-#KOSLI_FLOW_SOURCE=jira-example-source
+# The following variable must be set before using this script
+# export KOSLI_ORG=kosli-public
+# export KOSLI_API_TOKEN="xx"
 
 function loud_curl
 {
@@ -77,6 +74,7 @@ function get_commits_between_staging_and_prod
     git log --format="%H" --reverse ${oldestCommit}..${newestCommit}
 }
 
+# We are missing Kosli CLI functionality for this, so we use curl and API
 function get_jira_issue_keys_from_trail
 {
     local -r flowName=$1; shift
@@ -98,102 +96,15 @@ function get_all_jira_issue_keys_for_commits
     echo $issueKeys
 }
 
-function get_artifact_flow_commit_mapping_json
-{
-    # Will return something similar to this
-    #[
-    #  {
-    #    "name": "frontend",
-    #    "flow_name": "jira-example-frontend",
-    #    "staging_git_commit": "bcfd4b6439af92012dd6fdabd2a53f297759cc52",
-    #    "prod_git_commit": "45254f18599330c0e08fe59fcf8bc818972e220f"
-    #  },
-    #  {
-    #    "name": "backend",
-    #    "flow_name": "jira-example-backend",
-    #    "staging_git_commit": "bcfd4b6439af92012dd6fdabd2a53f297759cc52",
-    #    "prod_git_commit": "45254f18599330c0e08fe59fcf8bc818972e220f"
-    #  }
-    #]
-
-    local -r stagingEnvName=$1; shift
-    local -r prodEnvName=$1; shift
-
-    stagingEnvJson=$(get_current_running_env_json ${stagingEnvName})
-    prodEnvJson=$(get_current_running_env_json ${prodEnvName})
-    echo "${stagingEnvJson}" | jq -r '
-      [
-        .[] |
-        {
-          name: .name,
-          flow_name: .flow_name,
-          staging_git_commit: .git_commit
-        }
-      ]' | jq --argjson prodEnvJson "${prodEnvJson}" '
-      [
-        .[] |
-        . + (
-          ($prodEnvJson | map(select(.name == .name and .flow_name == .flow_name)) | .[0]) |
-          {prod_git_commit: .git_commit}
-        )
-      ]'
-}
 
 function get_issue_keys_between_staging_and_prod
 {
-    commits=$(get_commits_between_staging_and_prod ${KOSLI_ENV_STAGING} ${KOSLI_ENV_PROD})
+    local -r stagingEnvName=$1; shift
+    local -r prodEnvName=$1; shift
+    local -r flowName=$1; shift
+
+    commits=$(get_commits_between_staging_and_prod ${stagingEnvName} ${prodEnvName})
     #echo "Commits between staging and prod: ${commits}" >&2
-    issueKeys=$(get_all_jira_issue_keys_for_commits ${KOSLI_FLOW_SOURCE} "${commits}")
+    issueKeys=$(get_all_jira_issue_keys_for_commits ${flowName} "${commits}")
     echo ${issueKeys} | tr ' ' '\n' | sort -u | tr '\n' ' '
 }
-#get_current_running_env_json ${KOSLI_ENV_DEV}
-#get_issue_keys_between_staging_and_prod
-
-#artifactFlowMapping=$(get_artifact_flow_commit_mapping_json ${KOSLI_ENV_STAGING} ${KOSLI_ENV_PROD})
-#
-#echo "$artifactFlowMapping" | jq -c '.[]' | while read -r artifact; do
-#    prod_git_commit=$(echo "$artifact" | jq -r '.prod_git_commit')
-#    staging_git_commit=$(echo "$artifact" | jq -r '.staging_git_commit')
-#
-#    git log --format="%H" "$prod_git_commit..$staging_git_commit"
-#done
-
-
-#exit 0
-#
-#names=""
-#declare -A flow_names
-#declare -A staging_git_commits
-#declare -A prod_git_commits
-#
-#while IFS= read -r line; do
-#    name=$(echo "$line" | awk '{print $1}')
-#    flow_names["$name"]=$(echo "$line" | awk '{print $2}')
-#    staging_git_commits["$name"]=$(echo "$line" | awk '{print $3}')
-#    names+=" $name"
-#done <<< "$(echo "${stagingEnvJson}" | jq -r '.[] | "\(.name) \(.flow_name) \(.git_commit)"')"
-#
-#while IFS= read -r line; do
-#    name=$(echo "$line" | awk '{print $1}')
-#    prod_git_commits["$name"]=$(echo "$line" | awk '{print $3}')
-#    names+=" $name"
-#done <<< "$(echo "${prodEnvJson}" | jq -r '.[] | "\(.name) \(.flow_name) \(.git_commit)"')"
-#
-#
-#for name in ${names}; do
-#  echo "Name: $name"
-#  echo "Flow Name: ${flow_names[$name]}"
-#  echo "Stag Commit: ${staging_git_commits[$name]}"
-#  echo "Prod Commit: ${prod_git_commits[$name]}"
-#  echo "-----"
-#  git log --format="%H" --reverse ${prod_git_commits[$name]}..${staging_git_commits[$name]}
-#done
-
-
-#get_jira_issue_keys_from_trail jira-example-frontend eea3dcd96d366768bb88c5dcf079cfdec2557bcc
-
-#a=$(get_current_env_json ${KOSLI_ENV_STAGING})
-#get_newest_commit_sha "${a}"
-#
-#a=$(get_current_env_json ${KOSLI_ENV_PROD})
-#get_oldest_commit_sha "${a}"

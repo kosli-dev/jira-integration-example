@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 
-#JIRA_BASE_URL="https://kosli-team.atlassian.net"
-#JIRA_USERNAME="tore@kosli.com"
-#JIRA_API_TOKEN="xx"
-#JIRA_PROJECT_ID=10000
-#JIRA_APPROVER_ID="11111111111"
+# The following variable must be set before using this script
+# export JIRA_BASE_URL="https://kosli-team.atlassian.net"
+# export JIRA_USERNAME="tore@kosli.com"
+# export JIRA_API_TOKEN="xx"
 
 function loud_curl
 {
@@ -110,22 +109,6 @@ function get_issue_keys_in_release
     get_issues_in_release ${releaseId} | jq -r '[.issues[].key] | join(" ")'
 }
 
-
-function add_approver_to_release
-{
-    # Might be a problem https://community.developer.atlassian.com/t/add-approver-to-version-through-rest-api/76975
-    local -r approverId=$1; shift
-    local -r releaseId=$1; shift
-
-    local -r url="${JIRA_BASE_URL}/rest/api/3/version/${releaseId}"
-    local -r data='{
-        "approvers": [{
-            "accountId": "'${approverId}'"
-        }]
-    }'
-    loud_curl_jira PUT "${url}" "${data}"
-}
-
 function add_issue_to_release() {
     local -r issueKey=$1; shift
     local -r releaseId=$1; shift
@@ -148,10 +131,18 @@ function get_issue {
     loud_curl_jira GET "${url}" {}
 }
 
-#RELEASE_NAME=2025.02.20-r1
-#get_current_release_candidate ${JIRA_PROJECT_ID}
-#create_release ${JIRA_PROJECT_ID} ${RELEASE_NAME}
-#get_release 10033
-#get_issue OPS-5
-#add_issue_to_release OPS-5 10033
-#add_approver_to_release ${JIRA_APPROVER_ID} 10033
+# Jira has no API to add an approver to a release. This must be done in the UX
+# See https://community.developer.atlassian.com/t/add-approver-to-version-through-rest-api/76975
+function add_approver_to_release
+{
+    local -r approverId=$1; shift
+    local -r releaseId=$1; shift
+
+    local -r url="${JIRA_BASE_URL}/rest/api/3/version/${releaseId}"
+    local -r data='{
+        "approvers": [{
+            "accountId": "'${approverId}'"
+        }]
+    }'
+    loud_curl_jira PUT "${url}" "${data}"
+}
