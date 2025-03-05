@@ -98,10 +98,33 @@ function get_release
     loud_curl_jira GET "${url}" {}
 }
 
+function get_user
+{
+    local -r accountId=$1; shift
+    local url="${JIRA_BASE_URL}/rest/api/3/user?accountId=${accountId}"
+    loud_curl_jira GET "${url}" {}
+}
+
 function get_approvers_in_release
 {
     local -r releaseId=$1; shift
-    get_release ${releaseId} | jq '.approvers'
+    local approversJson=$(get_release ${releaseId} | jq '.approvers')
+
+    # Parse the approvers JSON and iterate over each accountId
+    echo "${approversJson}" | jq -c '.[]' | while read -r approver; do
+        accountId=$(echo "$approver" | jq -r '.accountId')
+    
+        # Fetch user details from Jira API
+        userJson=$(get_user ${accountId})
+    
+        # Extract email and display name
+        email=$(echo "$userJson" | jq -r '.emailAddress // empty')
+        displayName=$(echo "$userJson" | jq -r '.displayName // empty')
+    
+        # Merge the data
+        echo "$approver" | jq --arg email "${email}" --arg name "${displayName}" \
+            '. + {emailAddress: $email, displayName: $name}'
+    done | jq -s '.'  # Collect all JSON objects into an array
 }
 
 
