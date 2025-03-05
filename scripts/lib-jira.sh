@@ -108,23 +108,27 @@ function get_user
 function get_approvers_in_release
 {
     local -r releaseId=$1; shift
-    local approversJson=$(get_release ${releaseId} | jq '.approvers')
+    get_release ${releaseId} | jq '.approvers'
+}
 
-    # Parse the approvers JSON and iterate over each accountId
-    echo "${approversJson}" | jq -c '.[]' | while read -r approver; do
-        accountId=$(echo "$approver" | jq -r '.accountId')
-    
-        # Fetch user details from Jira API
-        userJson=$(get_user ${accountId})
-    
-        # Extract email and display name
-        email=$(echo "$userJson" | jq -r '.emailAddress // empty')
-        displayName=$(echo "$userJson" | jq -r '.displayName // empty')
-    
-        # Merge the data
-        echo "$approver" | jq --arg email "${email}" --arg name "${displayName}" \
+function add_approver_name_and_email
+ {
+    local releaseJsonFile=$1; shift
+    local releaseJson=$(cat "releaseJsonFile")
+    local updatedApprovers accountId userJson email displayName
+
+    updatedApprovers=$(echo "${releaseJson}" | jq -c '.approvers[]' | while read -r approver; do
+        accountId=$(echo "${approver}" | jq -r '.accountId')
+        userJson=$(fetch_user_details "${accountId}")
+
+        email=$(echo "${userJson}" | jq -r '.emailAddress // empty')
+        displayName=$(echo "${userJson}" | jq -r '.displayName // empty')
+
+        echo "${approver}" | jq --arg email "$email" --arg name "$displayName" \
             '. + {emailAddress: $email, displayName: $name}'
-    done | jq -s '.'  # Collect all JSON objects into an array
+    done | jq -s '.')
+
+    echo "${releaseJson}" | jq --argjson approvers "${updatedApprovers}" '.approvers = $approvers' > "${releaseJsonFile}"
 }
 
 
