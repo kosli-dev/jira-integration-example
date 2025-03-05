@@ -78,7 +78,7 @@ function get_commits_between_staging_and_prod
     stagingEnvJson=$(get_current_running_env_json ${stagingEnvName})
     prodEnvJson=$(get_current_running_env_json ${prodEnvName})
     newestCommit=$(get_newest_commit_sha "${stagingEnvJson}")
-    oldestCommit=$(get_oldest_commit_sha "${prodEnvJson}")
+    oldestCommit=$(get_newest_commit_sha "${prodEnvJson}")
     git log --format="%H" --reverse ${oldestCommit}..${newestCommit}
 }
 
@@ -88,7 +88,7 @@ function get_jira_issue_keys_from_trail
     local -r flowName=$1; shift
     local -r trailName=$1; shift
 
-    local -r url="https://app.kosli.com/api/v2/attestations/${KOSLI_ORG}/${flowName}/trail/${trailName}/jira-ticket"
+    local -r url="https://app.kosli.com/api/v2/attestations/${KOSLI_ORG}/${flowName}/trail/${trailName}/work-reference"
     loud_curl_kosli GET "${url}" {} | jq -r '.[].jira_results[] | select(.issue_exists == true) | .issue_id'
 }
 

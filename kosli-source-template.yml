@@ -1,7 +1,7 @@
 version: 1
 trail:
     attestations:
-        - name: jira-ticket
+        - name: work-reference
           type: jira
         - name: pull-request
           type: pull_request

@@ -55,7 +55,7 @@ runs:
           # Currently the kosli attest jira command is missing a feature to not report the jira ticket,
           # so use a grep for now
           kosli attest jira \
-            --name jira-ticket \
+            --name work-reference \
             --jira-base-url ${{ inputs.jira-base-url }} \
             --jira-username ${{ inputs.jira-username }} \
             --jira-api-token ${{ inputs.jira-api-token }} \
@@ -63,7 +63,7 @@ runs:
             --assert --dry-run 2>&1 | grep "no Jira references are found" && exit 1 || exit 0
         else
           kosli attest jira \
-            --name jira-ticket \
+            --name work-reference \
             --jira-base-url ${{ inputs.jira-base-url }} \
             --jira-username ${{ inputs.jira-username }} \
             --jira-api-token ${{ inputs.jira-api-token }} \
