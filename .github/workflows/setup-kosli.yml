@@ -58,7 +58,7 @@ jobs:
         run:
           kosli create policy ${{ env.KOSLI_ENV_DEV }} kosli-dev-staging-policy.yml
             --description "Trail compliance"
-            --type environment
+            --type env
 
       ### staging env ###
       - name: Create staging env
@@ -71,7 +71,7 @@ jobs:
         run:
           kosli create policy ${{ env.KOSLI_ENV_STAGING }} kosli-dev-staging-policy.yml
             --description "Trail compliance"
-            --type environment
+            --type env
 
 
       ### prod env ###
@@ -85,4 +85,4 @@ jobs:
         run:
           kosli create policy ${{ env.KOSLI_ENV_PROD }} kosli-prod-policy.yml
             --description "Trail compliance and release-approval"
-            --type environment
+            --type env
