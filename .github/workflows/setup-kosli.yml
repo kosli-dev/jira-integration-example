@@ -47,42 +47,46 @@ jobs:
             --description "Track jira example attestations for frontend"
             --template-file apps/frontend/kosli-template.yml
 
-      ### dev env ###
+
+      ### environments ###
       - name: Create dev env
         run:
           kosli create environment ${{ env.KOSLI_ENV_DEV }}
             --description "A simulated development environment"
             --type server
 
-      - name: Create policy for dev env
-        run:
-          kosli create policy ${{ env.KOSLI_ENV_DEV }} kosli-dev-staging-policy.yml
-            --description "Trail compliance"
-            --type env
-
-      ### staging env ###
       - name: Create staging env
         run:
           kosli create environment ${{ env.KOSLI_ENV_STAGING }}
             --description "A simulated staging environment"
             --type server
 
-      - name: Create policy for staging env
-        run:
-          kosli create policy ${{ env.KOSLI_ENV_STAGING }} kosli-dev-staging-policy.yml
-            --description "Trail compliance"
-            --type env
-
-
-      ### prod env ###
       - name: Create prod env
         run:
           kosli create environment ${{ env.KOSLI_ENV_PROD }}
             --description "A simulated production environment"
             --type server
 
+      ### policies ###
+      - name: Create dev and staging policy
+        run:
+          kosli create policy jira-example-dev-staging-policy kosli-dev-staging-policy.yml
+            --description "Trail compliance"
+            --type env
+
+      - name: Attach policy for dev and staging env
+        run:
+          kosli attach-policy jira-example-dev-staging-policy
+            --environment  ${{ env.KOSLI_ENV_DEV }}        
+            --environment  ${{ env.KOSLI_ENV_STAGING }}
+
       - name: Create policy for prod env
         run:
-          kosli create policy ${{ env.KOSLI_ENV_PROD }} kosli-prod-policy.yml
+          kosli create policy jira-example-prod-policy kosli-prod-policy.yml
             --description "Trail compliance and release-approval"
             --type env
+
+      - name: Attach policy for prod env
+        run:
+          kosli attach-policy jira-example-prod-policy
+            --environment  ${{ env.KOSLI_ENV_PROD }}
