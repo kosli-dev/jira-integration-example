@@ -117,7 +117,7 @@ jobs:
 
   deploy-to-prod:
     name: Deploy to prod
-    needs: [check-approved-release]
+    needs: [check-approved-release, attest-approval]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
