@@ -86,5 +86,3 @@ jobs:
           kosli create policy ${{ env.KOSLI_ENV_PROD }} kosli-prod-policy.yml
             --description "Trail compliance and release-approval"
             --type environment
-
-
