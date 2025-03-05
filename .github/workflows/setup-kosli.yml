@@ -1,0 +1,88 @@
+name: Setup kosli
+
+on:
+  workflow_dispatch:
+
+env:
+  # kosli commands picks up org, flow, trail and api-token from these environment variables
+  KOSLI_ORG: kosli-public
+  KOSLI_API_TOKEN: "${{ secrets.KOSLI_PUBLIC_API_TOKEN }}"
+  KOSLI_CLI_VERSION: "2.11.8"
+  KOSLI_ENV_DEV: "jira-integration-example-dev"
+  KOSLI_ENV_STAGING: "jira-integration-example-staging"
+  KOSLI_ENV_PROD: "jira-integration-example-prod"
+  # KOSLI_DRY_RUN: true
+
+jobs:
+  create-flows:
+    name: Create kosli flows and environments
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Kosli cli
+        uses: kosli-dev/setup-cli-action@v2
+        with:
+          version:
+            ${{ env.KOSLI_CLI_VERSION }}
+
+      ### flows ###
+      - name: Create jira-example-source flow
+        run:
+          kosli create flow jira-example-source
+            --description "Track jira example attestations for source"
+            --template-file kosli-source-template.yml
+
+      - name: Create jira-example-backend flow
+        run:
+          kosli create flow jira-example-backend
+            --description "Track jira example attestations for backend"
+            --template-file apps/backend/kosli-template.yml
+
+      - name: Create jira-example-frontend flow
+        run:
+          kosli create flow jira-example-frontend
+            --description "Track jira example attestations for frontend"
+            --template-file apps/frontend/kosli-template.yml
+
+      ### dev env ###
+      - name: Create dev env
+        run:
+          kosli create environment ${{ env.KOSLI_ENV_DEV }}
+            --description "A simulated development environment"
+            --type server
+
+      - name: Create policy for dev env
+        run:
+          kosli create policy ${{ env.KOSLI_ENV_DEV }} kosli-dev-staging-policy.yml
+            --description "Trail compliance"
+            --type environment
+
+      ### staging env ###
+      - name: Create staging env
+        run:
+          kosli create environment ${{ env.KOSLI_ENV_STAGING }}
+            --description "A simulated staging environment"
+            --type server
+
+      - name: Create policy for staging env
+        run:
+          kosli create policy ${{ env.KOSLI_ENV_STAGING }} kosli-dev-staging-policy.yml
+            --description "Trail compliance"
+            --type environment
+
+
+      ### prod env ###
+      - name: Create prod env
+        run:
+          kosli create environment ${{ env.KOSLI_ENV_PROD }}
+            --description "A simulated production environment"
+            --type server
+
+      - name: Create policy for prod env
+        run:
+          kosli create policy ${{ env.KOSLI_ENV_PROD }} kosli-prod-policy.yml
+            --description "Trail compliance and release-approval"
+            --type environment

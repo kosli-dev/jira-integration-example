@@ -1,0 +1,10 @@
+# prod-policy.yaml
+_schema: https://kosli.com/schemas/policy/environment/v1
+artifacts: # the rules apply to artifacts in an environment snapshot
+  provenance:
+    required: true # all artifacts must have provenance
+  trail-compliance:
+    required: true  # Requires the trail in which the artifact is attested to be compliant
+  attestations:
+    - name: release-approval # all artifacts must have approval for running in production
+      type: '*' # any attestation type
