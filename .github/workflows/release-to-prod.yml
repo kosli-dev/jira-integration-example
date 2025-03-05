@@ -85,6 +85,7 @@ jobs:
           source scripts/lib-jira.sh
 
           get_release ${{ env.RELEASE_ID }} >> /tmp/jira-release.json
+          add_approver_name_and_email /tmp/jira-release.json
           kosli attest generic \
             --name release-approval \
             --flow ${{ env.KOSLI_FLOW_RELEASE }} \
