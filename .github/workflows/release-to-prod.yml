@@ -10,6 +10,7 @@ env:
   KOSLI_ORG: kosli-public
   KOSLI_API_TOKEN: "${{ secrets.KOSLI_PUBLIC_API_TOKEN }}"
   KOSLI_CLI_VERSION: "2.11.8"
+  KOSLI_FLOW_RELEASE: "jira-example-release"
   KOSLI_FLOW_BACKEND: "jira-example-backend"
   KOSLI_FLOW_FRONTEND: "jira-example-frontend"
   KOSLI_ENV_DEV: "jira-integration-example-dev"
@@ -78,6 +79,17 @@ jobs:
         with:
           version:
             ${{ env.KOSLI_CLI_VERSION }}
+
+      - name: Report approval to release flow
+        run: |
+          source scripts/lib-jira.sh
+
+          get_release ${{ env.RELEASE_ID }} >> /tmp/jira-release.json
+          kosli attest generic \
+            --name release-approval \
+            --flows ${{ env.KOSLI_FLOW_RELEASE }} \
+            --trail ${{ env.RELEASE_ID }} \
+            --user-data /tmp/jira-release.json
 
       - name: Get what SW is running in staging
         run: |
