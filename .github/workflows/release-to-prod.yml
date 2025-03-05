@@ -101,7 +101,7 @@ jobs:
           COMMIT_SHA_BACKEND=$(jq -r '.[] | select(.name == "backend") | .git_commit' /tmp/staging-env.json)
           kosli attest generic \
             --name release-approval \
-            --flows ${{ env.KOSLI_FLOW_BACKEND }}
+            --flow ${{ env.KOSLI_FLOW_BACKEND }}
             --trail ${COMMIT_SHA_BACKEND} \
             --user-data /tmp/jira-release.json
 
@@ -110,7 +110,7 @@ jobs:
           COMMIT_SHA_FRONTEND=$(jq -r '.[] | select(.name == "frontend") | .git_commit' /tmp/staging-env.json)
           kosli attest generic \
             --name release-approval \
-            --flows ${{ env.KOSLI_FLOW_FRONTEND }}
+            --flow ${{ env.KOSLI_FLOW_FRONTEND }}
             --trail ${COMMIT_SHA_FRONTEND} \
             --user-data /tmp/jira-release.json
 
