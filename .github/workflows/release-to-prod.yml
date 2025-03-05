@@ -87,7 +87,7 @@ jobs:
           get_release ${{ env.RELEASE_ID }} >> /tmp/jira-release.json
           kosli attest generic \
             --name release-approval \
-            --flows ${{ env.KOSLI_FLOW_RELEASE }} \
+            --flow ${{ env.KOSLI_FLOW_RELEASE }} \
             --trail ${{ env.RELEASE_ID }} \
             --user-data /tmp/jira-release.json
 
