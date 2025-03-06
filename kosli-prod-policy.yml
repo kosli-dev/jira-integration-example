@@ -7,4 +7,4 @@ artifacts: # the rules apply to artifacts in an environment snapshot
     required: true  # Requires the trail in which the artifact is attested to be compliant
   attestations:
     - name: release-approval # all artifacts must have approval for running in production
-      type: '*' # any attestation type
+      type: custom:approval-jira
