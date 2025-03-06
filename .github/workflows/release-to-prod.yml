@@ -1,4 +1,4 @@
-name: Release to Prod
+name: Check for release to Prod
 
 on:
   schedule:
