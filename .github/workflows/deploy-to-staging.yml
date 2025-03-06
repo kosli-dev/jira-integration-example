@@ -5,11 +5,11 @@ on:
 
 env:
   # kosli commands picks up org, flow, trail and api-token from these environment variables
-  KOSLI_ORG: kosli-public
+#  KOSLI_ORG: kosli-public
   KOSLI_API_TOKEN: "${{ secrets.KOSLI_PUBLIC_API_TOKEN }}"
-  KOSLI_CLI_VERSION: "2.11.8"
-  KOSLI_ENV_DEV: "jira-integration-example-dev"
-  KOSLI_ENV_STAGING: "jira-integration-example-staging"
+#  KOSLI_CLI_VERSION: "2.11.8"
+#  KOSLI_ENV_DEV: "jira-integration-example-dev"
+#  KOSLI_ENV_STAGING: "jira-integration-example-staging"
 #  KOSLI_FLOW_FRONTEND: "jira-example-frontend"
 #  KOSLI_FLOW_BACKEND: "jira-example-backend"
   # KOSLI_DRY_RUN: true
