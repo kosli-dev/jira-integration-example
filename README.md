@@ -171,7 +171,7 @@ https://app.kosli.com/kosli-public/environments/
 
 # Custom attestation of approval
 The approval done in Jira contains a list of the approvers. To properly store and
-evaluate this data we use a custom attestation type `custom:attestation-jira`.
+evaluate this data we use a custom attestation type `custom:approval-jira`.
 How this custom attestation type is created is documented in the `setup-kosli.yml`,
 and usage of it in `release-to-prod.yml`.
 
