@@ -43,7 +43,7 @@ jobs:
       - name: Attest jira ticket
         uses: ./.github/workflows/composites/kosli-attest-jira
         with:
-          jira-base-url: ${{ env.JIRA_BASE_URL }}
+          jira-base-url: ${{ vars.JIRA_BASE_URL }}
           jira-username: ${{ env.JIRA_USERNAME }}
           jira-api-token: ${{ env.JIRA_API_TOKEN }}
           jira-issue-fields: "summary,description"

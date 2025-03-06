@@ -40,7 +40,7 @@ runs:
       uses: kosli-dev/setup-cli-action@v2
       with:
         version:
-          ${{ env.KOSLI_CLI_VERSION }}
+          ${{ vars.KOSLI_CLI_VERSION }}
 
     - name: Attest Jira ticket
       shell: bash
