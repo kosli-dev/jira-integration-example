@@ -29,6 +29,7 @@ running on which server:
 - running-staging-frontend
 - running-prod-backend
 - running-prod-frontend
+
 For development we use the latest version checked in on `main`
 
 There are three GitHub actions that simulate the reporting of snapshots. 
@@ -36,6 +37,10 @@ There are three GitHub actions that simulate the reporting of snapshots.
 - Report staging snapshot
 - Report prod snapshot
 They trigger automatically once an hour, but can also be triggered manually.
+
+There is a 
+[kosli-setup](https://github.com/kosli-dev/jira-integration-example/actions/workflows/setup-kosli.yml)
+CI-pipeline to create all flows, environments, custom attestation types and policies.
 
 
 # Software Process
@@ -162,6 +167,13 @@ We currently also have a `jira-example-release` flow, but this needs some improv
 
 https://app.kosli.com/kosli-public/flows/
 https://app.kosli.com/kosli-public/environments/
+
+
+# Custom attestation of approval
+The approval done in Jira contains a list of the approvers. To properly store and
+evaluate this data we use a custom attestation type `custom:attestation-jira`.
+How this custom attestation type is created is documented in the `setup-kosli.yml`,
+and usage of it in `release-to-prod.yml`.
 
 
 # Things to improve
