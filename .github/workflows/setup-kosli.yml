@@ -47,6 +47,20 @@ jobs:
             --description "Track jira example attestations for frontend"
             --template-file apps/frontend/kosli-template.yml
 
+      - name: Create jira-example-release flow
+        run:
+          kosli create flow jira-example-release
+            --description "Track jira example attestations for releases"
+
+      ### Custom attestation types ###
+      - name: Create approval-jira attestation type
+        run:
+          kosli create attestation-type approval-jira
+              --description "Approval from Jira. Must have at least 1 approver and all approvers must have APPROVED it"
+              --schema approval-jira-schema.json
+              --jq '(.approvers | length) > 0'
+              --jq '[.approvers[].status == "APPROVED"] | all'
+
 
       ### environments ###
       - name: Create dev env
