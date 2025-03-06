@@ -2,7 +2,7 @@ name: Build Frontend
 
 on:
   push:
-    paths: ["apps/frontend/**", ".github/workflows/build-frontend.yml"]
+    paths: ["apps/frontend/**"]
     branches-ignore:
       - 'refs/tags/*' # In this demo we use tags to simulate what SW is running, so ignore
 
