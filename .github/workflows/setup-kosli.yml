@@ -51,6 +51,7 @@ jobs:
         run:
           kosli create flow jira-example-release
             --description "Track jira example attestations for releases"
+            --template-file kosli-release-template.yml
 
       ### Custom attestation types ###
       - name: Create approval-jira attestation type
