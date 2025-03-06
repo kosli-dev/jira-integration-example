@@ -98,7 +98,7 @@ function get_release
     loud_curl_jira GET "${url}" {}
 }
 
-function get_user
+function fetch_user_details
 {
     local -r accountId=$1; shift
     local url="${JIRA_BASE_URL}/rest/api/3/user?accountId=${accountId}"
