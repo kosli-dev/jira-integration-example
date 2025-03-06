@@ -13,9 +13,8 @@ env:
   KOSLI_FLOW_RELEASE: "jira-example-release"
   KOSLI_FLOW_BACKEND: "jira-example-backend"
   KOSLI_FLOW_FRONTEND: "jira-example-frontend"
-#  KOSLI_ENV_DEV: "jira-integration-example-dev"
-#  KOSLI_ENV_STAGING: "jira-integration-example-staging"
-#  KOSLI_ENV_PROD: "jira-integration-example-prod"
+  KOSLI_ENV_STAGING:  "${{ vars.KOSLI_ENV_STAGING }}"
+  KOSLI_ENV_PROD:  "${{ vars.KOSLI_ENV_PROD }}"
   # KOSLI_DRY_RUN: true
   JIRA_BASE_URL: "${{ vars.JIRA_BASE_URL }}"
   JIRA_USERNAME: ${{ secrets.KOSLI_JIRA_USERNAME }}
