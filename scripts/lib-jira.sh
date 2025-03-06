@@ -98,7 +98,7 @@ function get_release
     loud_curl_jira GET "${url}" {}
 }
 
-function get_user
+function fetch_user_details
 {
     local -r accountId=$1; shift
     local url="${JIRA_BASE_URL}/rest/api/3/user?accountId=${accountId}"
@@ -114,7 +114,7 @@ function get_approvers_in_release
 function add_approver_name_and_email
  {
     local releaseJsonFile=$1; shift
-    local releaseJson=$(cat "releaseJsonFile")
+    local releaseJson=$(cat "${releaseJsonFile}")
     local updatedApprovers accountId userJson email displayName
 
     updatedApprovers=$(echo "${releaseJson}" | jq -c '.approvers[]' | while read -r approver; do
@@ -124,7 +124,7 @@ function add_approver_name_and_email
         email=$(echo "${userJson}" | jq -r '.emailAddress // empty')
         displayName=$(echo "${userJson}" | jq -r '.displayName // empty')
 
-        echo "${approver}" | jq --arg email "$email" --arg name "$displayName" \
+        echo "${approver}" | jq --arg email "${email}" --arg name "${displayName}" \
             '. + {emailAddress: $email, displayName: $name}'
     done | jq -s '.')
 
