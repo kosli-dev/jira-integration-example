@@ -82,14 +82,24 @@ function get_commits_between_staging_and_prod
     git log --format="%H" --reverse ${oldestCommit}..${newestCommit}
 }
 
-# We are missing Kosli CLI functionality for this, so we use curl and API
+function get_attestation_from_trail
+{
+    local -r flowName=$1; shift
+    local -r trailName=$1; shift
+    local -r attestationName=$1; shift
+
+    # We are missing Kosli CLI functionality for this, so we use curl and API
+    local -r url="https://app.kosli.com/api/v2/attestations/${KOSLI_ORG}/${flowName}/trail/${trailName}/${attestationName}"
+    loud_curl_kosli GET "${url}" {}
+}
+
+
 function get_jira_issue_keys_from_trail
 {
     local -r flowName=$1; shift
     local -r trailName=$1; shift
 
-    local -r url="https://app.kosli.com/api/v2/attestations/${KOSLI_ORG}/${flowName}/trail/${trailName}/work-reference"
-    loud_curl_kosli GET "${url}" {} | jq -r '.[].jira_results[] | select(.issue_exists == true) | .issue_id'
+    get_attestation_from_trail ${flowName} ${trailName} "work-reference" | jq -r '.[].jira_results[] | select(.issue_exists == true) | .issue_id'
 }
 
 function get_all_jira_issue_keys_for_commits
