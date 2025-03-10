@@ -54,7 +54,7 @@ jobs:
           echo "RELEASE_ID=${RELEASE_ID}" >> $GITHUB_ENV
 
       - name: Begin trail
-        uses: ./.github/workflows/composites/kosli-begin-trail
+        uses: ./.github/actions/kosli-begin-trail
         with:
           kosli-trail: ${{ env.RELEASE_ID }}
 #          kosli-template-file: ${{ env.KOSLI_TEMPLATE_FILE }}
