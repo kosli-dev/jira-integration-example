@@ -28,7 +28,7 @@ jobs:
 
       - name: Begin trail
         if: ${{ github.ref == 'refs/heads/main' }}
-        uses: ./.github/workflows/composites/kosli-begin-trail
+        uses: ./.github/actions/kosli-begin-trail
         with:
           kosli-trail: ${{ env.KOSLI_TRAIL }}
           kosli-template-file: ${{ env.KOSLI_TEMPLATE_FILE }}
@@ -41,7 +41,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Attest jira ticket
-        uses: ./.github/workflows/composites/kosli-attest-jira
+        uses: ./.github/actions/kosli-attest-jira
         with:
           jira-base-url: ${{ vars.JIRA_BASE_URL }}
           jira-username: ${{ env.JIRA_USERNAME }}
@@ -58,7 +58,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Attest GitHub pull-request
-        uses: ./.github/workflows/composites/kosli-attest-pullrequest
+        uses: ./.github/actions/kosli-attest-pullrequest
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           assert: true
