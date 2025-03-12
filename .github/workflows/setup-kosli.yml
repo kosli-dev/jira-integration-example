@@ -105,7 +105,7 @@ jobs:
       ### attache policies ###
       - name: Attach has provenance policy to all envs
         run:
-          kosli attach-policy has-provenance to all
+          kosli attach-policy has-provenance
             --environment  ${{ env.KOSLI_ENV_DEV }}        
             --environment  ${{ env.KOSLI_ENV_STAGING }}
             --environment  ${{ env.KOSLI_ENV_PROD }}
