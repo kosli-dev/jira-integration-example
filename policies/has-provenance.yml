@@ -1,0 +1,4 @@
+_schema: https://kosli.com/schemas/policy/environment/v1
+artifacts: # the rules apply to artifacts in an environment snapshot
+  provenance:
+    required: true # all artifacts must have provenance
