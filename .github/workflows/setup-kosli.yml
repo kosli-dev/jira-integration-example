@@ -85,7 +85,7 @@ jobs:
       ### create policies ###
       - name: Create has provenance policy
         run:
-          kosli create policy jira-example-has-provenance policies/has-provenance.yml
+          kosli create policy has-provenance policies/has-provenance.yml
             --description "Artifacts has provenance"
             --type env
 
