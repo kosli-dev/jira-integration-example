@@ -57,6 +57,18 @@ function get_current_running_env_json
     kosli get snapshot ${envName} --output json | jq -r '[.artifacts[] | select(.annotation.now != 0)]'
 }
 
+function create_running_sw_short_list_json
+{
+    local -r snapshotJsonFileName=$1; shift
+    jq '[.[] | {
+        name,
+        fingerprint,
+        flow_name: ( .flows[0].flow_name // "" ),
+        template_reference_name: ( .flows[0].template_reference_name // "" ),
+        git_commit: ( .flows[0].git_commit // "" )
+    }]' ${snapshotJsonFileName}
+}
+
 function get_newest_commit_sha
 {
     local -r envJson=$1; shift

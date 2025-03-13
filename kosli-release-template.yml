@@ -2,6 +2,6 @@ version: 1
 trail:
     attestations:
         - name: staging-software
-          type: "*"
+          type: custom:running-sw
         - name: release-approval
           type: custom:approval-jira
