@@ -33,25 +33,25 @@ jobs:
         run:
           kosli create flow jira-example-source
             --description "Track jira example attestations for source"
-            --template-file kosli-source-template.yml
+            --template-file kosli-flow-templates/source-template.yml
 
       - name: Create jira-example-backend flow
         run:
           kosli create flow jira-example-backend
             --description "Track jira example attestations for backend"
-            --template-file apps/backend/kosli-template.yml
+            --template-file kosli-flow-templates/backend-template.yml
 
       - name: Create jira-example-frontend flow
         run:
           kosli create flow jira-example-frontend
             --description "Track jira example attestations for frontend"
-            --template-file apps/frontend/kosli-template.yml
+            --template-file kosli-flow-templates/frontend-template.yml
 
       - name: Create jira-example-release flow
         run:
           kosli create flow jira-example-release
             --description "Track jira example attestations for releases"
-            --template-file kosli-release-template.yml
+            --template-file kosli-flow-templates/release-template.yml
 
       ### Custom attestation types ###
       - name: Create approval-jira attestation type
