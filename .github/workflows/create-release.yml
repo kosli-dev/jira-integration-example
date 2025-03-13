@@ -63,7 +63,14 @@ jobs:
         run: |
           source scripts/lib-kosli.sh
           get_current_running_env_json ${{ env.KOSLI_ENV_STAGING }} > /tmp/staging-env.json
-          jq '[.[] | {name, fingerprint, git_commit}]' /tmp/staging-env.json > /tmp/user-data.json
+          jq '[.[] | {
+            name,
+            fingerprint,
+            flow_name: ( .flows[0].flow_name // "" ),
+            template_reference_name: ( .flows[0].template_reference_name // "" ),
+            git_commit: ( .flows[0].git_commit // "" )
+          }]' /tmp/staging-env.json > /tmp/user-data.json
+
           kosli attest generic \
             --name staging-software \
             --trail ${{ env.RELEASE_ID }} \
