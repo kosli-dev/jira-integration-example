@@ -63,20 +63,15 @@ jobs:
         run: |
           source scripts/lib-kosli.sh
           get_current_running_env_json ${{ env.KOSLI_ENV_STAGING }} > /tmp/staging-env.json
-          jq '[.[] | {
-            name,
-            fingerprint,
-            flow_name: ( .flows[0].flow_name // "" ),
-            template_reference_name: ( .flows[0].template_reference_name // "" ),
-            git_commit: ( .flows[0].git_commit // "" )
-          }]' /tmp/staging-env.json > /tmp/user-data.json
+          create_running_sw_short_list_json /tmp/staging-env.json > /tmp/staging-sw.json
 
-          kosli attest generic \
+          kosli attest custom \
+            --type=running-sw \
             --name staging-software \
             --trail ${{ env.RELEASE_ID }} \
-            --user-data /tmp/user-data.json
+            --attestation-data /tmp/staging-sw.json
           echo "Current staging SW:" >> $GITHUB_STEP_SUMMARY
-          cat /tmp/user-data.json | jq >> $GITHUB_STEP_SUMMARY
+          cat /tmp/staging-sw.json | jq >> $GITHUB_STEP_SUMMARY
 
 
       - name: Add Jira issues to release
