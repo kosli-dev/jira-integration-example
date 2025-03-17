@@ -101,25 +101,31 @@ jobs:
         run: |
           source scripts/lib-kosli.sh
           get_current_running_env_json ${{ env.KOSLI_ENV_STAGING }} > /tmp/staging-env.json
+          create_running_sw_short_list_json /tmp/staging-env.json > /tmp/staging-sw.json
+
 
       - name: Attest backend approval
         run: |
-          COMMIT_SHA_BACKEND=$(jq -r '.[] | select(.name == "backend") | .git_commit' /tmp/staging-env.json)
+          COMMIT_SHA_BACKEND=$(jq -r '.[] | select(.name == "backend") | .git_commit' /tmp/staging-sw.json)
+          FINGERPRINT_BACKEND=$(jq -r '.[] | select(.name == "backend") | .fingerprint' /tmp/staging-sw.json)
           kosli attest custom \
             --type=approval-jira \
             --name release-approval \
             --flow ${{ env.KOSLI_FLOW_BACKEND }} \
             --trail ${COMMIT_SHA_BACKEND} \
+            --fingerprint ${FINGERPRINT_BACKEND} \
             --attestation-data /tmp/jira-release.json
 
       - name: Attest frontend approval
         run: |
-          COMMIT_SHA_FRONTEND=$(jq -r '.[] | select(.name == "frontend") | .git_commit' /tmp/staging-env.json)
+          COMMIT_SHA_FRONTEND=$(jq -r '.[] | select(.name == "frontend") | .git_commit' /tmp/staging-sw.json)
+          FINGERPRINT_FRONTEND=$(jq -r '.[] | select(.name == "frontend") | .fingerprint' /tmp/staging-sw.json)
           kosli attest custom \
             --type=approval-jira \
             --name release-approval \
             --flow ${{ env.KOSLI_FLOW_FRONTEND }} \
             --trail ${COMMIT_SHA_FRONTEND} \
+            --fingerprint ${FINGERPRINT_FRONTEND} \
             --attestation-data /tmp/jira-release.json
 
 
@@ -143,10 +149,11 @@ jobs:
         run: |
           source scripts/lib-kosli.sh
           get_current_running_env_json ${{ env.KOSLI_ENV_STAGING }} > /tmp/staging-env.json
+          create_running_sw_short_list_json /tmp/staging-env.json > /tmp/staging-sw.json
 
       - name: Get frontend tag
         run: |
-          COMMIT_SHA=$(jq -r '.[] | select(.name == "frontend") | .git_commit' /tmp/staging-env.json)
+          COMMIT_SHA=$(jq -r '.[] | select(.name == "frontend") | .git_commit' /tmp/staging-sw.json)
           echo "COMMIT_SHA_FRONTEND=$COMMIT_SHA" >> "$GITHUB_ENV"
 
       - name: Deploy frontend
@@ -178,7 +185,7 @@ jobs:
 
       - name: Get backend tag
         run: |
-          COMMIT_SHA=$(jq -r '.[] | select(.name == "backend") | .git_commit' /tmp/staging-env.json)
+          COMMIT_SHA=$(jq -r '.[] | select(.name == "backend") | .git_commit' /tmp/staging-sw.json)
           echo "COMMIT_SHA_BACKEND=$COMMIT_SHA" >> "$GITHUB_ENV"
 
       - name: Deploy backend
