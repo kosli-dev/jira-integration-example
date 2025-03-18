@@ -113,6 +113,9 @@ function get_approvers_in_release
 
 function add_approver_name_and_email
  {
+    # In list of approvers it only includes the accountId
+    # This function uses accountId to look up displayName and email and
+    # adds it to the input file.
     local releaseJsonFile=$1; shift
     local releaseJson=$(cat "${releaseJsonFile}")
     local updatedApprovers accountId userJson email displayName
@@ -146,7 +149,8 @@ function get_issue_keys_in_release
     get_issues_in_release ${releaseId} | jq -r '[.issues[].key] | join(" ")'
 }
 
-function add_issue_to_release() {
+function add_issue_to_release()
+{
     local -r issueKey=$1; shift
     local -r releaseId=$1; shift
 
@@ -161,11 +165,24 @@ function add_issue_to_release() {
     loud_curl_jira PUT "${url}" "${data}"
 }
 
-function get_issue {
+function get_issue
+{
     local -r issueKey=$1; shift
 
     local -r url="${JIRA_BASE_URL}/rest/api/3/issue/${issueKey}"
     loud_curl_jira GET "${url}" {}
+}
+
+function add_section_to_release
+{
+    local -r releaseId=$1; shift
+
+    local -r url="${JIRA_BASE_URL}/rest/api/3/version/${releaseId}"
+    local -r data='{
+         "myCustomField": "some custom value"
+    }'
+    debug_log "Set release ${releaseId} to released:\n${data}"
+    loud_curl_jira PUT "${url}" "${data}"
 }
 
 # Jira has no API to add an approver to a release. This must be done in the UX
