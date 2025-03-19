@@ -111,14 +111,14 @@ jobs:
       - name: Attach has provenance policy to all envs
         run:
           kosli attach-policy has-provenance
-            --environment  ${{ env.KOSLI_ENV_DEV }}        
+            --environment  ${{ env.KOSLI_ENV_DEV }}
             --environment  ${{ env.KOSLI_ENV_STAGING }}
             --environment  ${{ env.KOSLI_ENV_PROD }}
 
       - name: Attach trail compliant policy to all envs
         run:
           kosli attach-policy trail-compliant
-            --environment  ${{ env.KOSLI_ENV_DEV }}        
+            --environment  ${{ env.KOSLI_ENV_DEV }}
             --environment  ${{ env.KOSLI_ENV_STAGING }}
             --environment  ${{ env.KOSLI_ENV_PROD }}
 
@@ -126,3 +126,17 @@ jobs:
         run:
           kosli attach-policy has-release-approval
             --environment  ${{ env.KOSLI_ENV_PROD }}
+
+
+      ### detach old policies
+#      - name: Detach jira-example-dev-staging-policy
+#        run:
+#          kosli detach-policy jira-example-dev-staging-policy
+#            --environment  ${{ env.KOSLI_ENV_DEV }}
+#            --environment  ${{ env.KOSLI_ENV_STAGING }}
+#
+#      - name: Detach jira-example-prod-policy
+#        run:
+#          kosli detach-policy jira-example-prod-policy
+#            --environment  ${{ env.KOSLI_ENV_PROD }}
+
