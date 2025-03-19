@@ -131,12 +131,12 @@ jobs:
       ### detach old policies
       - name: Detach jira-example-dev-staging-policy
         run:
-          kosli dettach-policy jira-example-dev-staging-policy
+          kosli detach-policy jira-example-dev-staging-policy
             --environment  ${{ env.KOSLI_ENV_DEV }}        
             --environment  ${{ env.KOSLI_ENV_STAGING }}
 
       - name: Detach jira-example-prod-policy
         run:
-          kosli dettach-policy jira-example-dev-staging-policy
+          kosli detach-policy jira-example-dev-staging-policy
             --environment  ${{ env.KOSLI_ENV_DEV }}        
 
