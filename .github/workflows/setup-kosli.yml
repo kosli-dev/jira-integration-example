@@ -126,3 +126,17 @@ jobs:
         run:
           kosli attach-policy has-release-approval
             --environment  ${{ env.KOSLI_ENV_PROD }}
+
+
+      ### detach old policies
+      - name: Detach jira-example-dev-staging-policy
+        run:
+          kosli dettach-policy jira-example-dev-staging-policy
+            --environment  ${{ env.KOSLI_ENV_DEV }}        
+            --environment  ${{ env.KOSLI_ENV_STAGING }}
+
+      - name: Detach jira-example-prod-policy
+        run:
+          kosli dettach-policy jira-example-dev-staging-policy
+            --environment  ${{ env.KOSLI_ENV_DEV }}        
+
