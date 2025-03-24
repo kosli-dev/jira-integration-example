@@ -155,6 +155,23 @@ jobs:
         run: |
           COMMIT_SHA=$(jq -r '.[] | select(.name == "frontend") | .git_commit' /tmp/staging-sw.json)
           echo "COMMIT_SHA_FRONTEND=$COMMIT_SHA" >> "$GITHUB_ENV"
+          FINGERPRINT=$(jq -r '.[] | select(.name == "frontend") | .fingerprint' /tmp/staging-env.json)
+          echo "FINGERPRINT_FRONTEND=$FINGERPRINT" >> "$GITHUB_ENV"
+
+      - name: Get backend tag
+        run: |
+          COMMIT_SHA=$(jq -r '.[] | select(.name == "backend") | .git_commit' /tmp/staging-sw.json)
+          echo "COMMIT_SHA_BACKEND=$COMMIT_SHA" >> "$GITHUB_ENV"
+          FINGERPRINT=$(jq -r '.[] | select(.name == "backend") | .fingerprint' /tmp/staging-env.json)
+          echo "FINGERPRINT_BACKEND=$FINGERPRINT" >> "$GITHUB_ENV"
+
+      - name: Assert Artifacts
+        if: ${{ github.ref == 'refs/heads/main' }}
+        uses: ./.github/actions/assert-artifacts
+        with:
+          fingerprints: |
+            ${{ env.FINGERPRINT_FRONTEND }}
+            ${{ env.FINGERPRINT_BACKEND }}
 
       - name: Deploy frontend
         # We do not have a real repo so we just tag the git repo and then the
@@ -182,11 +199,6 @@ jobs:
               -d "{\"ref\": \"refs/tags/${TAG}\", \"sha\": \"${COMMIT_SHA}\"}" "https://api.github.com/repos/${OWNER}/${REPO}/git/refs"
           fi
           echo "Deployed frontend commit ${COMMIT_SHA}" >> $GITHUB_STEP_SUMMARY
-
-      - name: Get backend tag
-        run: |
-          COMMIT_SHA=$(jq -r '.[] | select(.name == "backend") | .git_commit' /tmp/staging-sw.json)
-          echo "COMMIT_SHA_BACKEND=$COMMIT_SHA" >> "$GITHUB_ENV"
 
       - name: Deploy backend
         # We do not have a real repo so we just tag the git repo and then the
