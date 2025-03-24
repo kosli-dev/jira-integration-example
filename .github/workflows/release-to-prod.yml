@@ -169,8 +169,9 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' }}
         uses: ./.github/actions/assert-artifacts
         with:
+          kosli-environment: ${{ vars.KOSLI_ENV_PROD }}
           fingerprints: |
-            ${{ env.FINGERPRINT_FRONTEND }}
+            ${{ env.FINGERPRINT_FRONTEND }},
             ${{ env.FINGERPRINT_BACKEND }}
 
       - name: Deploy frontend

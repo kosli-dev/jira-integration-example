@@ -7,6 +7,9 @@ inputs:
   #   KOSLI_ORG: PwC
   #   KOSLI_API_TOKEN: "${{ secrets.KOSLI_API_TOKEN }}"  
   #   KOSLI_CLI_VERSION: 2.11.6  
+  kosli-environment:
+    description: 'Kosli environment the artifacts shall be deployed to'
+    required: true
   fingerprints:
     description: 'Comma-separated list of fingerprints to assert'
     required: true
@@ -27,6 +30,6 @@ runs:
         EXIT_CODE=0
         IFS=',' read -ra FINGERPRINTS <<< "${{ inputs.fingerprints }}"
         for fingerprint in "${FINGERPRINTS[@]}"; do
-          kosli assert artifact --fingerprint "$fingerprint" || EXIT_CODE=1
+          kosli assert artifact --fingerprint "$fingerprint" --environment ${{ inputs.kosli-environment }} || EXIT_CODE=1
         done
         exit ${EXIT_CODE}
