@@ -94,7 +94,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Assert Artifacts
-        uses: ./.github/actions/assert-artifacts
+        uses: ./.github/actions/kosli-assert-artifacts
         with:
           kosli-environment: ${{ vars.KOSLI_ENV_DEV }}
           fingerprints:  ${{ needs.build.outputs.fingerprint }}
