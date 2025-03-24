@@ -167,7 +167,7 @@ jobs:
 
       - name: Assert Artifacts
         if: ${{ github.ref == 'refs/heads/main' }}
-        uses: ./.github/actions/assert-artifacts
+        uses: ./.github/actions/kosli-assert-artifacts
         with:
           kosli-environment: ${{ vars.KOSLI_ENV_PROD }}
           fingerprints: |
