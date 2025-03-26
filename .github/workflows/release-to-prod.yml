@@ -90,12 +90,14 @@ jobs:
 
           get_release ${{ env.RELEASE_ID }} > /tmp/jira-release.json
           add_approver_name_and_email /tmp/jira-release.json
+          APPROVER_NAME=$(jq -r '.approvers[].displayName' /tmp/jira-release.json)
           kosli attest custom \
             --type=approval-jira \
             --name release-approval \
             --flow ${{ env.KOSLI_FLOW_RELEASE }} \
             --trail ${{ env.RELEASE_ID }} \
-            --attestation-data /tmp/jira-release.json
+            --attestation-data /tmp/jira-release.json \
+            --annotate Approver="${APPROVER_NAME}"
 
       - name: Get what SW is running in staging
         run: |
@@ -108,25 +110,29 @@ jobs:
         run: |
           COMMIT_SHA_BACKEND=$(jq -r '.[] | select(.name == "backend") | .git_commit' /tmp/staging-sw.json)
           FINGERPRINT_BACKEND=$(jq -r '.[] | select(.name == "backend") | .fingerprint' /tmp/staging-sw.json)
+          APPROVER_NAME=$(jq -r '.approvers[].displayName' /tmp/jira-release.json)
           kosli attest custom \
             --type=approval-jira \
             --name release-approval \
             --flow ${{ env.KOSLI_FLOW_BACKEND }} \
             --trail ${COMMIT_SHA_BACKEND} \
             --fingerprint ${FINGERPRINT_BACKEND} \
-            --attestation-data /tmp/jira-release.json
+            --attestation-data /tmp/jira-release.json \
+            --annotate Approver="${APPROVER_NAME}"
 
       - name: Attest frontend approval
         run: |
           COMMIT_SHA_FRONTEND=$(jq -r '.[] | select(.name == "frontend") | .git_commit' /tmp/staging-sw.json)
           FINGERPRINT_FRONTEND=$(jq -r '.[] | select(.name == "frontend") | .fingerprint' /tmp/staging-sw.json)
+          APPROVER_NAME=$(jq -r '.approvers[].displayName' /tmp/jira-release.json)
           kosli attest custom \
             --type=approval-jira \
             --name release-approval \
             --flow ${{ env.KOSLI_FLOW_FRONTEND }} \
             --trail ${COMMIT_SHA_FRONTEND} \
             --fingerprint ${FINGERPRINT_FRONTEND} \
-            --attestation-data /tmp/jira-release.json
+            --attestation-data /tmp/jira-release.json \
+            --annotate Approver="${APPROVER_NAME}"
 
 
   deploy-to-prod:
