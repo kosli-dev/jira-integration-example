@@ -1,8 +1,8 @@
 name: Check for release to Prod
 
 on:
-  schedule:
-    - cron: '0 * * * *'  # Runs at the start of every hour
+#  schedule:
+#    - cron: '0 * * * *'  # Runs at the start of every hour
   workflow_dispatch:
 
 env:

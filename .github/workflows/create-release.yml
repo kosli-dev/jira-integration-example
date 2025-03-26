@@ -59,6 +59,20 @@ jobs:
           kosli-trail: ${{ env.RELEASE_ID }}
 #          kosli-template-file: ${{ env.KOSLI_TEMPLATE_FILE }}
 
+      - name: Report current prod SW
+        run: |
+          source scripts/lib-kosli.sh
+          get_current_running_env_json ${{ env.KOSLI_ENV_PROD }} > /tmp/prod-env.json
+          create_running_sw_short_list_json /tmp/prod-env.json > /tmp/prod-sw.json
+
+          kosli attest custom \
+            --type=running-sw \
+            --name prod-software \
+            --trail ${{ env.RELEASE_ID }} \
+            --attestation-data /tmp/prod-sw.json
+          echo "Current prod SW:" >> $GITHUB_STEP_SUMMARY
+          cat /tmp/prod-sw.json | jq >> $GITHUB_STEP_SUMMARY
+
       - name: Report current staging SW
         run: |
           source scripts/lib-kosli.sh

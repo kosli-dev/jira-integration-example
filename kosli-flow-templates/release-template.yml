@@ -1,6 +1,8 @@
 version: 1
 trail:
     attestations:
+        - name: prod-software
+          type: custom:running-sw
         - name: staging-software
           type: custom:running-sw
         - name: release-approval
