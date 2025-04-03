@@ -59,7 +59,6 @@ runs:
           JIRA_PROJECT_KEY_ARG="--jira-project-key ${{ inputs.jira-project-key }}"
         fi
 
-
         if [ "${{ inputs.report-to-kosli }}" == "false" ]; then
           # Currently the kosli attest jira command is missing a feature to not report the jira ticket,
           # so use a grep for now
