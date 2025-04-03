@@ -95,6 +95,8 @@ jobs:
     needs: [build, jira-ticket, pull-request]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
       - name: Assert Artifacts
         uses: ./.github/actions/kosli-assert-artifacts
         with:
