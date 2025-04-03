@@ -59,6 +59,7 @@ runs:
           JIRA_PROJECT_KEY_ARG="--jira-project-key ${{ inputs.jira-project-key }}"
         fi
 
+          kosli version
 
           kosli attest jira \
             --name work-reference \
