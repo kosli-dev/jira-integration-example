@@ -18,6 +18,7 @@ env:
   JIRA_BASE_URL: "${{ vars.JIRA_BASE_URL }}"
   JIRA_USERNAME: ${{ secrets.KOSLI_JIRA_USERNAME }}
   JIRA_API_TOKEN: ${{ secrets.KOSLI_JIRA_API_TOKEN }}
+  JIRA_PROJECT_KEY: "OPS"
 
 jobs:
   begin-trail:
@@ -46,6 +47,7 @@ jobs:
           jira-base-url: ${{ vars.JIRA_BASE_URL }}
           jira-username: ${{ env.JIRA_USERNAME }}
           jira-api-token: ${{ env.JIRA_API_TOKEN }}
+          jira-project-key: ${{ env.JIRA_PROJECT_KEY }}
           jira-issue-fields: "summary,description"
           report-to-kosli: ${{ github.ref == 'refs/heads/main' }}
 
