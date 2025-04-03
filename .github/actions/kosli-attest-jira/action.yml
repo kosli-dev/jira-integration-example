@@ -59,24 +59,6 @@ runs:
           JIRA_PROJECT_KEY_ARG="--jira-project-key ${{ inputs.jira-project-key }}"
         fi
 
-          kosli attest jira \
-            --name work-reference \
-            --jira-base-url ${{ inputs.jira-base-url }} \
-            --jira-username ${{ inputs.jira-username }} \
-            --jira-api-token ${{ inputs.jira-api-token }} \
-            ${JIRA_PROJECT_KEY_ARG} \
-            --ignore-branch-match \
-            --assert --dry-run
-
-          echo kosli attest jira \
-            --name work-reference \
-            --jira-base-url ${{ inputs.jira-base-url }} \
-            --jira-username ${{ inputs.jira-username }} \
-            --jira-api-token ${{ inputs.jira-api-token }} \
-            ${JIRA_PROJECT_KEY_ARG} \
-            --ignore-branch-match \
-            --assert --dry-run
-
         if [ "${{ inputs.report-to-kosli }}" == "false" ]; then
           # Currently the kosli attest jira command is missing a feature to not report the jira ticket,
           # so use a grep for now
