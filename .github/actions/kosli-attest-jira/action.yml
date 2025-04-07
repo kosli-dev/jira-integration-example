@@ -14,7 +14,7 @@ inputs:
   #   KOSLI_FLOW: your-flow-name
   #   KOSLI_TRAIL: your-trail-name (often git-commit-sha)
   #   KOSLI_API_TOKEN: "${{ secrets.KOSLI_API_TOKEN }}"
-  #   KOSLI_CLI_VERSION: 2.11.6
+  #   KOSLI_CLI_VERSION: 2.11.11
   jira-base-url:
     description: "Jira base url for your org (often https://kosli-team.atlassian.net)"
     required: true
@@ -30,6 +30,11 @@ inputs:
   jira-issue-fields:
     description: "List of fields to include from Jira ticket. See comment at top of file."
     required: false
+  allow-only-branch-match:
+    description: "Allow that only the original branch name matches the jira issue reference. \
+      WARNING: Git log will not contain Jira-issue reference. You will rely on kosli to go back from commit to Jira-issue."
+    required: false
+    default: "false"
   report-to-kosli:
     description: "Report to kosli if jira ticket exists. Normally set this to 'false' on branches"
     required: false
@@ -58,6 +63,15 @@ runs:
         if [ -n "${{ inputs.jira-project-key }}" ]; then
           JIRA_PROJECT_KEY_ARG="--jira-project-key ${{ inputs.jira-project-key }}"
         fi
+        
+        IGNORE_BRANCH_MATCH_ARG=""
+        JIRA_SECONDARY_SOURCE_ARG=""
+        if [ "${{ inputs.allow-only-branch-match }}" == "true" ]; then
+          JIRA_SECONDARY_SOURCE_ARG="--jira-secondary-source ${{ github.head_ref }}"
+        else
+          IGNORE_BRANCH_MATCH_ARG="--ignore-branch-match"
+        fi
+        
 
         if [ "${{ inputs.report-to-kosli }}" == "false" ]; then
           # Currently the kosli attest jira command is missing a feature to not report the jira ticket,
@@ -68,7 +82,8 @@ runs:
             --jira-username ${{ inputs.jira-username }} \
             --jira-api-token ${{ inputs.jira-api-token }} \
             ${JIRA_PROJECT_KEY_ARG} \
-            --ignore-branch-match \
+            ${IGNORE_BRANCH_MATCH_ARG} \
+            ${JIRA_SECONDARY_SOURCE_ARG} \
             --assert --dry-run 2>&1 | grep "no Jira references are found" && exit 1 || exit 0
         else
           kosli attest jira \
@@ -77,7 +92,8 @@ runs:
             --jira-username ${{ inputs.jira-username }} \
             --jira-api-token ${{ inputs.jira-api-token }} \
             ${JIRA_PROJECT_KEY_ARG} \
-            --ignore-branch-match \
-            --assert \
-            ${JIRA_ISSUE_ARG}
+            ${IGNORE_BRANCH_MATCH_ARG} \
+            ${JIRA_SECONDARY_SOURCE_ARG} \
+            ${JIRA_ISSUE_ARG} \
+            --assert
         fi
