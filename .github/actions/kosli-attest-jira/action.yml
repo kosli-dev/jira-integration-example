@@ -67,11 +67,15 @@ runs:
         IGNORE_BRANCH_MATCH_ARG=""
         JIRA_SECONDARY_SOURCE_ARG=""
         if [ "${{ inputs.allow-only-branch-match }}" == "true" ]; then
+          # If this is on a branch we automatically search the branch name for reference,
+          # but on main branch it is more trickey
           # To get the original branch we need to first find the PR number from the
           # git commit message, then get pr info from github and extract the head.ref
-          PR_NUMBER=$(git log -1 --pretty=%B | grep "(#" | sed "s/^.*(#//;s/).*//")
-          ORIG_BRANCH=$(gh api repos/${{ github.repository }}/pulls/${PR_NUMBER} --jq .head.ref)\
-          JIRA_SECONDARY_SOURCE_ARG="--jira-secondary-source ${ORIG_BRANCH}"
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            PR_NUMBER=$(git log -1 --pretty=%B | grep "(#" | sed "s/^.*(#//;s/).*//")
+            ORIG_BRANCH=$(gh api repos/${{ github.repository }}/pulls/${PR_NUMBER} --jq .head.ref)\
+            JIRA_SECONDARY_SOURCE_ARG="--jira-secondary-source ${ORIG_BRANCH}"
+          fi
         else
           IGNORE_BRANCH_MATCH_ARG="--ignore-branch-match"
         fi
