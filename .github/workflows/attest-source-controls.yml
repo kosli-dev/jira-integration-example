@@ -41,16 +41,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-
-      - name: debug
-        env:
-          GITHUB_CONTEXT: ${{ toJSON(github)}}
-        run: |
-          echo "GITHUB_REF: $GITHUB_REF"          
-          BRANCH_NAME=${GITHUB_REF#refs/heads/}
-          echo "BRANCH_NAME: $BRANCH_NAME"
-          echo "${GITHUB_CONTEXT}" | jq
-
       - name: Attest jira ticket
         uses: ./.github/actions/kosli-attest-jira
         with:

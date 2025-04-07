@@ -67,7 +67,11 @@ runs:
         IGNORE_BRANCH_MATCH_ARG=""
         JIRA_SECONDARY_SOURCE_ARG=""
         if [ "${{ inputs.allow-only-branch-match }}" == "true" ]; then
-          JIRA_SECONDARY_SOURCE_ARG="--jira-secondary-source ${{ github.head_ref }}"
+          # To get the original branch we need to first find the PR number from the
+          # git commit message, then get pr info from github and extract the head.ref
+          PR_NUMBER=$(git log -1 --pretty=%B | grep "(#" | sed "s/^.*(#//;s/).*//")
+          ORIG_BRANCH=$(gh api repos/${{ github.repository }}/pulls/${PR_NUMBER} --jq .head.ref)\
+          JIRA_SECONDARY_SOURCE_ARG="--jira-secondary-source ${ORIG_BRANCH}"
         else
           IGNORE_BRANCH_MATCH_ARG="--ignore-branch-match"
         fi
