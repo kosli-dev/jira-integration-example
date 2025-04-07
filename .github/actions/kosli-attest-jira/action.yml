@@ -68,10 +68,11 @@ runs:
         JIRA_SECONDARY_SOURCE_ARG=""
         if [ "${{ inputs.allow-only-branch-match }}" == "true" ]; then
           # If this is on a branch we automatically search the branch name for reference,
-          # but on main branch it is more trickey
+          # but on main branch it is more trickey.
           # To get the original branch we need to first find the PR number from the
           # git commit message, then get pr info from github and extract the head.ref
           if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            export GH_TOKEN=${{ github.token }}
             PR_NUMBER=$(git log -1 --pretty=%B | grep "(#" | sed "s/^.*(#//;s/).*//")
             ORIG_BRANCH=$(gh api repos/${{ github.repository }}/pulls/${PR_NUMBER} --jq .head.ref)\
             JIRA_SECONDARY_SOURCE_ARG="--jira-secondary-source ${ORIG_BRANCH}"
