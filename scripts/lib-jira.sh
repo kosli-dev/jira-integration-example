@@ -211,3 +211,11 @@ function add_approver_to_release
     }'
     loud_curl_jira PUT "${url}" "${data}"
 }
+
+function get_project_id
+{
+    local -r projectKey=$1; shift
+
+    local -r url="${JIRA_BASE_URL}/rest/api/3/project/${projectKey}"
+    loud_curl_jira GET "${url}" {} | jq -r .id
+}

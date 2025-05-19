@@ -1,0 +1,33 @@
+name: Get project Id
+
+on:
+  workflow_dispatch:
+    inputs:
+      project-key:
+        description: 'Project key. Something like: OPS'
+        required: true
+        type: string
+
+env:
+  # kosli commands picks up org, flow, trail and api-token from these environment variables
+  KOSLI_ORG: "${{ vars.KOSLI_ORG }}"
+  KOSLI_API_TOKEN: "${{ secrets.KOSLI_PUBLIC_API_TOKEN }}"
+  KOSLI_CLI_VERSION: "${{ vars.KOSLI_CLI_VERSION }}"
+  KOSLI_ENV_DEV: "${{ vars.KOSLI_ENV_DEV }}"
+  KOSLI_ENV_STAGING:  "${{ vars.KOSLI_ENV_STAGING }}"
+  KOSLI_ENV_PROD:  "${{ vars.KOSLI_ENV_PROD }}"
+  # KOSLI_DRY_RUN: true
+
+jobs:
+  get-project-id:
+    name: Get project id
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      ### flows ###
+      - name: get project id
+        run: |
+          source scripts/lib-jira
+          get_project_id ${{ inputs.project-key }}
+
