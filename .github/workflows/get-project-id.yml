@@ -28,6 +28,8 @@ jobs:
       ### flows ###
       - name: get project id
         run: |
+          pwd
+          ls -l
           source scripts/lib-jira
           get_project_id ${{ inputs.project-key }}
 
