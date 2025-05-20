@@ -12,45 +12,6 @@ function debug_log
     fi
 }
 
-function loud_curl
-{
-  # curl that prints the server traceback if the response
-  # status code is not in the range 200-299
-  local -r method=$1; shift  # eg GET/POST
-  local -r url=$1; shift
-  local -r jsonPayload=$1; shift
-  local -r userArg=$1;shift
-
-  local -r outputFile=$(mktemp)
-
-  set +e
-  HTTP_CODE=$(curl --header 'Content-Type: application/json' \
-       --user "${userArg}" \
-       --output "${outputFile}" \
-       --write-out "%{http_code}" \
-       --request "${method}" \
-       --silent \
-       --data "${jsonPayload}" \
-       ${url})
-    set -e
-    if [[ ${HTTP_CODE} -lt 200 || ${HTTP_CODE} -gt 299 ]] ; then
-        >&2 cat ${outputFile}  # Request failed so send output to stderr
-        >&2 echo
-        rm ${outputFile}
-        exit 2
-    fi
-    cat ${outputFile}  # Correct response send to stdout
-    echo
-    rm ${outputFile}
-}
-
-function loud_curl_kosli
-{
-    local -r userArg="${KOSLI_API_TOKEN}:unused"
-    loud_curl "$@" ${userArg}
-}
-
-
 function get_current_running_env_json
 {
     local -r envName=$1; shift
@@ -100,9 +61,7 @@ function get_attestation_from_trail
     local -r trailName=$1; shift
     local -r attestationName=$1; shift
 
-    # We are missing Kosli CLI functionality for this, so we use curl and API
-    local -r url="https://app.kosli.com/api/v2/attestations/${KOSLI_ORG}/${flowName}/trail/${trailName}/${attestationName}"
-    loud_curl_kosli GET "${url}" {}
+    kosli get attestation ${attestationName} --output json --flow ${flowName} --trail ${trailName}
 }
 
 
