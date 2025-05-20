@@ -23,7 +23,7 @@ inputs:
     description: "Kosli template file"
     required: false
   external-url:
-    description: "External URL"
+    description: "External URL in format someTag=https://...."
     required: false
     
 

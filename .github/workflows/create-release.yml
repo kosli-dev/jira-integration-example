@@ -62,7 +62,7 @@ jobs:
         uses: ./.github/actions/kosli-begin-trail
         with:
           kosli-trail: ${{ env.RELEASE_ID }}
-          external-url: ${{ env.REL_LINK }}
+          external-url: JireRelease=${{ env.REL_LINK }}
 #          kosli-template-file: ${{ env.KOSLI_TEMPLATE_FILE }}
 
       - name: Report current prod SW
