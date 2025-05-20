@@ -22,6 +22,9 @@ inputs:
   kosli-template-file:
     description: "Kosli template file"
     required: false
+  external-url:
+    description: "External URL in format someTag=https://...."
+    required: false
     
 
 runs:
@@ -41,5 +44,10 @@ runs:
           TEMPLATE_FILE_ARG="--template-file ${{ inputs.kosli-template-file }}"
         fi
 
+        EXTERNAL_URL_ARG=""
+        if [ -n "${{ inputs.external-url }}" ]; then
+          EXTERNAL_URL_ARG="--external-url ${{ inputs.external-url }}"
+        fi
+
         echo "Run kosli begin trail with ORG: '${KOSLI_ORG}' FLOW: '${KOSLI_FLOW}' TRAIL: '${{ inputs.kosli-trail }}'' TEMPLATE-FILE: '${{ inputs.kosli-template-file }}'"
-        kosli begin trail ${{ inputs.kosli-trail }} ${TEMPLATE_FILE_ARG}
+        kosli begin trail ${{ inputs.kosli-trail }} ${TEMPLATE_FILE_ARG} ${EXTERNAL_URL_ARG}
