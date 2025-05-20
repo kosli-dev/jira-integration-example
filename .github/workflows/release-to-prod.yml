@@ -34,6 +34,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: debug
+        run: |
+          PROJECT_KEY=$(echo "${{ vars.JIRA_PROJECT_KEY }}" | cut -d',' -f1)
+          RELEASE_ID=11093
+          echo ${JIRA_BASE_URL}/projects/${PROJECT_KEY}/versions/${RELEASE_ID}
+          echo done
+
       - name: Check for approved release
         id: check-jira
         run: |          
