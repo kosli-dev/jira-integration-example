@@ -17,6 +17,9 @@ env:
   KOSLI_ENV_STAGING:  "${{ vars.KOSLI_ENV_STAGING }}"
   KOSLI_ENV_PROD:  "${{ vars.KOSLI_ENV_PROD }}"
   # KOSLI_DRY_RUN: true
+  JIRA_BASE_URL: "${{ vars.JIRA_BASE_URL }}"
+  JIRA_USERNAME: ${{ secrets.KOSLI_JIRA_USERNAME }}
+  JIRA_API_TOKEN: ${{ secrets.KOSLI_JIRA_API_TOKEN }}
 
 jobs:
   get-project-id:
@@ -28,6 +31,6 @@ jobs:
       ### flows ###
       - name: get project id
         run: |
-          source scripts/lib-jira
-          get_project_id ${{ inputs.project-key }}
-
+          source scripts/lib-jira.sh
+          ID=$(get_project_id ${{ inputs.project-key }})
+          echo " ${{ inputs.project-key }} : $ID" >> $GITHUB_STEP_SUMMARY
