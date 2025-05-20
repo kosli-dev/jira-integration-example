@@ -31,7 +31,7 @@ jobs:
           set -x
           source scripts/lib-jira.sh
           echo A
-          get_project_id ${{ inputs.project-key }
+          get_project_id ${{ inputs.project-key }}
           echo B
           get_project_id OPS
           echo C
