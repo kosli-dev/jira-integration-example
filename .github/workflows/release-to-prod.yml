@@ -34,13 +34,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: debug
-        run: |
-          PROJECT_KEY=$(echo "${{ vars.JIRA_PROJECT_KEY }}" | cut -d',' -f1)
-          RELEASE_ID=11093
-          echo ${JIRA_BASE_URL}/projects/${PROJECT_KEY}/versions/${RELEASE_ID}
-          echo done
-
       - name: Check for approved release
         id: check-jira
         run: |          
@@ -98,13 +91,18 @@ jobs:
           get_release ${{ env.RELEASE_ID }} > /tmp/jira-release.json
           add_approver_name_and_email /tmp/jira-release.json
           APPROVER_NAME=$(jq -r '.approvers[].displayName' /tmp/jira-release.json)
+          
+          PROJECT_KEY=$(echo "${{ vars.JIRA_PROJECT_KEY }}" | cut -d',' -f1)
+          REL_LINK="${JIRA_BASE_URL}/projects/${PROJECT_KEY}/versions/${{ env.RELEASE_ID }}"
+          
           kosli attest custom \
             --type=approval-jira \
             --name release-approval \
             --flow ${{ env.KOSLI_FLOW_RELEASE }} \
             --trail ${{ env.RELEASE_ID }} \
             --attestation-data /tmp/jira-release.json \
-            --annotate Approver="${APPROVER_NAME}"
+            --annotate Approver="${APPROVER_NAME}" \
+            --annotate JireRelease=${REL_LINK}
 
       - name: Get what SW is running in staging
         run: |
