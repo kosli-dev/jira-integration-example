@@ -42,14 +42,12 @@ jobs:
           # Fail if release does not exists
           CURRENT_REL_JSON=$(get_current_release_candidate ${{ env.JIRA_PROJECT_ID }})
           
-          echo $CURRENT_REL_JSON >> $GITHUB_STEP_SUMMARY
-          
           REL_VALUES_JSON=$(echo "${CURRENT_REL_JSON}" | jq .values)
           if [ "${REL_VALUES_JSON}" == "[]" ]; then
             echo "No release candidate exist: ${CURRENT_REL_JSON}"
             exit 1
           fi
-          
+
           RELEASE_ID=$(echo "${REL_VALUES_JSON}" |  jq -r '.[0].id')
           echo "RELEASE_ID=${RELEASE_ID}" >> $GITHUB_ENV
           echo "Updated Jira release_id: ${RELEASE_ID}" >> $GITHUB_STEP_SUMMARY
