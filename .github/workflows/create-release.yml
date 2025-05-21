@@ -54,7 +54,7 @@ jobs:
           echo "RELEASE_ID=${RELEASE_ID}" >> $GITHUB_ENV
 
           PROJECT_KEY=$(echo "${{ vars.JIRA_PROJECT_KEY }}" | cut -d',' -f1)
-          REL_LINK="${JIRA_BASE_URL}/projects/${PROJECT_KEY}/versions/${{ env.RELEASE_ID }}"
+          REL_LINK="${JIRA_BASE_URL}/projects/${PROJECT_KEY}/versions/${RELEASE_ID}"
           echo "REL_LINK=${REL_LINK}" >> $GITHUB_ENV
 
 
