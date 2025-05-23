@@ -32,7 +32,7 @@ jobs:
 
       - name: Generate reports
         id: generate-periodic-reports
-        uses: ./.github/actions/generate-periodic-reports@main
+        uses: ./.github/actions/generate-periodic-reports
         with:
           start-date: ${{ github.event.inputs.start-date }}
           end-date: ${{ github.event.inputs.end-date }}

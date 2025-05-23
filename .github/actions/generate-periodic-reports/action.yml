@@ -48,7 +48,7 @@ runs:
 
     - name: Generate Jira PR report
       id: jira-pr-report
-      uses: ./.github/actions/generate-jira-pr-report@main
+      uses: ./.github/actions/generate-jira-pr-report
       with:
         result-dir: /tmp/audit-reports
         kosli-source-flow: ${{ inputs.kosli-source-flow }}
