@@ -49,6 +49,7 @@ jobs:
           jira-api-token: ${{ env.JIRA_API_TOKEN }}
           jira-project-key: ${{ env.JIRA_PROJECT_KEY }}
           jira-issue-fields: "summary,description"
+          allow-only-branch-match: true
           report-to-kosli: ${{ github.ref == 'refs/heads/main' }}
 
   pull-request:
