@@ -196,6 +196,20 @@ function add_section_to_release
     loud_curl_jira PUT "${url}" "${data}"
 }
 
+function add_trail_link_to_release
+{
+    local -r releaseId=$1; shift
+    local -r trailUrl=$1;
+    local -r url="${JIRA_BASE_URL}/rest/api/3/version/${releaseId}/relatedwork"
+    local -r data='{
+      "category": "Audit",
+      "title": "Kosli Trail",
+      "url": "'${trailUrl}'"
+    }'
+    debug_log "Add related work to release ${releaseId}:\n${data}"
+    loud_curl_jira PUT "${url}" "${data}"
+}
+
 # Jira has no API to add an approver to a release. This must be done in the UX
 # See https://community.developer.atlassian.com/t/add-approver-to-version-through-rest-api/76975
 function add_approver_to_release
