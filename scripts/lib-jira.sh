@@ -207,7 +207,7 @@ function add_trail_link_to_release
       "url": "'${trailUrl}'"
     }'
     debug_log "Add related work to release ${releaseId}:\n${data}"
-    loud_curl_jira PUT "${url}" "${data}"
+    loud_curl_jira POST "${url}" "${data}"
 }
 
 # Jira has no API to add an approver to a release. This must be done in the UX
