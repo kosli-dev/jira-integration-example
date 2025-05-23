@@ -181,8 +181,6 @@ and usage of it in `release-to-prod.yml`.
 Make the scripts a little more streamlined and make it easy to just give
 a list of apps/environments and loop over them.
 
-There is no CLI command to get the Jira-issues from Kosli, so I have to use curl.
-
 I report the Jira issue and pull request on both the source and build flows. A link
 from the source trail to build trail would be nice. But for proper linking we
 need to let a trail event on one trail trigger also a trail event on the other trails that it
@@ -201,3 +199,90 @@ also the combination running in production?
 - I do a lot of API calls to get the list of commits in a release, and then
 I loop over all the commits to collect all the Jira issues included. This
 gives me some complicated bash scripts, which is hard to maintain.
+
+
+# Customer demo
+
+## Preparation
+Make sure there are no pending release in
+https://kosli-team.atlassian.net/projects/OPS?selectedItem=com.atlassian.jira.jira-projects-plugin%3Arelease-page
+
+Make sure the environment reporting is up to date
+make report_all_envs
+
+## With customer
+Show them the board https://kosli-team.atlassian.net/jira/software/projects/OPS/boards/1
+Add a jira issue in **IN PROGRESS** with some description: Make the app great again
+Show them that there are no open releases
+  https://kosli-team.atlassian.net/projects/OPS?selectedItem=com.atlassian.jira.jira-projects-plugin%3Arelease-page
+
+Make a branch that matches the name
+  git checkout -b OPS-xx-improve-app
+Update the two files by increasing the number:
+  apps/backend/backend-content.txt
+  apps/frontend/frontend-content.txt
+Commit, push and make a PR
+  git commit -m "Made the app create agin"
+  git push
+  gh pr create
+Approve the PR in github https://github.com/kosli-dev/jira-integration-example/pulls
+You should now have three jobs running in actions
+  - Build Backend
+  - Build Frontend
+  - Attest Source Controls
+
+Let all jobs finish and then force reporting of what is running in each environment
+  make report_all_envs
+
+You can now show that the updated is running in development
+  https://app.kosli.com/kosli-public/environments/jira-integration-example-dev/snapshots/
+
+Deploy development SW to staging and when that job has finished you can report environments again
+  make deploy_to_staging
+  WAIT
+  make report_all_envs
+
+The SW is now running in staging
+  https://app.kosli.com/kosli-public/environments/jira-integration-example-staging/snapshots/
+
+Create a release candidate
+  make create_release_candidate
+
+Show the customer the new release
+  https://kosli-team.atlassian.net/projects/OPS?selectedItem=com.atlassian.jira.jira-projects-plugin%3Arelease-page
+Press the release and show them that the Jira issue you created is part of the release. If there are more there
+it is just because there was some other updates also included.
+
+There is no API in Jira to add an approver for a release so you have to do this manually. You find this on the
+right hand side. You can also show them that it is marked as **Unreleased**
+
+You can now trigger a release to production which will fail since not all approvers has approved it
+  make check_release_to_prod
+
+### Fast demo
+Depending on how much time you have now you can release what you have now by setting the release to APPROVED
+in the release web page. Then run the release, wait and then update the environments
+  make check_release_to_prod
+  WAIT
+  make report_all_envs
+
+### Extended demo
+Go back to the Jira board and make a new Jira issue: Improve frontend
+- make branch
+- update apps/frontend/frontend-content.txt
+- git commit, push, create pr
+- approve pr
+- WAIT
+- make report_all_envs
+- WAIT
+- make deploy_to_staging
+- WAIT
+- make report_all_envs
+- WAIT
+
+Now we have the new fix for frontend running in staging. The backend SW is the same as before.
+Update the Jira release so we also include the new Jira issue
+  make update_release_candidate
+
+Show the release (you must reload the page) to show that the new Jira issue is in the list
+Now you can now follow the steps in Fast Demo to finish the demo
