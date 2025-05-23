@@ -79,11 +79,10 @@ main()
         echo ${sha} | tr '\n' ',' >> ${SOURCE_REPORT_FILE}
         echo ${date} | tr '\n' ',' >> ${SOURCE_REPORT_FILE}
             
-        jq -r '.[].git_commit_info.author' ${SOURCE_REPORT_DIR}/${sha}/pull-request.json | tr '\n' ',' >> ${SOURCE_REPORT_FILE} 
-        jq -r '.[].pull_requests[].approvers[]' ${SOURCE_REPORT_DIR}/${sha}/pull-request.json | uniq | tr '\n' ',' >> ${SOURCE_REPORT_FILE}
-        
-        jq -r '.[] | .jira_results[] | select(.issue_exists == true) | .issue_id' ${SOURCE_REPORT_DIR}/${sha}/work-reference.json | tr '\n' ',' >> ${SOURCE_REPORT_FILE}
-        
+        jq -r '[.[].git_commit_info.author] | join(",") + ","' ${SOURCE_REPORT_DIR}/${sha}/pull-request.json | tr -d '\n' >> ${SOURCE_REPORT_FILE}
+        jq -r '[.[].pull_requests[].approvers[]] | unique | join(",") + ","' ${SOURCE_REPORT_DIR}/${sha}/pull-request.json | tr -d '\n' >> ${SOURCE_REPORT_FILE}
+        jq -r '[.[] | .jira_results[] | select(.issue_exists == true) | .issue_id] | join(",") + ","' ${SOURCE_REPORT_DIR}/${sha}/work-reference.json | tr -d '\n' >> ${SOURCE_REPORT_FILE}
+
         echo >> ${SOURCE_REPORT_FILE}
     done <<< "$commits"
 }
