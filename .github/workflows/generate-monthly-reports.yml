@@ -1,0 +1,40 @@
+name: Generate monthly reports
+
+on:
+  schedule:
+    - cron: '0 0 1 * *'  # Triggers at midnight on the 1st of every month.
+  workflow_dispatch:
+    inputs:
+      start-date:
+        description: 'Start date (YYYY-MM-DD)'
+        required: true
+      end-date:
+        description: 'End date (YYYY-MM-DD)'
+        required: true
+
+env:
+  KOSLI_ORG: "${{ vars.KOSLI_ORG }}"
+  KOSLI_API_TOKEN: "${{ secrets.KOSLI_API_TOKEN }}"
+  KOSLI_CLI_VERSION: "${{ vars.KOSLI_CLI_VERSION }}"
+
+
+jobs:
+  generate-reports:
+    name: Generate periodic reports
+    runs-on: ubuntu-latest
+    outputs:
+      result-jira-pr-csv-file: ${{ steps.generate-periodic-reports.outputs.result-jira-pr-csv-file }}
+      result-jira-pr-artifact-upload-name: ${{ steps.generate-periodic-reports.outputs.result-jira-pr-artifact-upload-name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate reports
+        id: generate-periodic-reports
+        uses: ./.github/actions/generate-periodic-reports@main
+        with:
+          start-date: ${{ github.event.inputs.start-date }}
+          end-date: ${{ github.event.inputs.end-date }}
+          kosli-source-flow: jira-example-source
+
