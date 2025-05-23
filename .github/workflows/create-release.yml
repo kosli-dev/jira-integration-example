@@ -65,6 +65,12 @@ jobs:
           external-url: JireRelease=${{ env.REL_LINK }}
 #          kosli-template-file: ${{ env.KOSLI_TEMPLATE_FILE }}
 
+      - name: Add trail to jira release
+        run: |
+          source scripts/lib-jira.sh
+          kosli_trail_link="https://app.kosli.com/${{ env.KOSLI_ORG }}/flows/${{ env.KOSLI_FLOW }}/trails/${{ env.RELEASE_ID }}"
+          add_trail_link_to_release ${{ env.RELEASE_ID }} ${kosli_trail_link}
+
       - name: Report current prod SW
         run: |
           source scripts/lib-kosli.sh
