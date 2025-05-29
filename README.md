@@ -212,20 +212,26 @@ make report_all_envs
 
 ## With customer
 Show them the board https://kosli-team.atlassian.net/jira/software/projects/OPS/boards/1
+
 Add a jira issue in **IN PROGRESS** with some description: Make the app great again
+
 Show them that there are no open releases
   https://kosli-team.atlassian.net/projects/OPS?selectedItem=com.atlassian.jira.jira-projects-plugin%3Arelease-page
 
 Make a branch that matches the name
   git checkout -b OPS-xx-improve-app
+
 Update the two files by increasing the number:
   apps/backend/backend-content.txt
   apps/frontend/frontend-content.txt
+
 Commit, push and make a PR
   git commit -m "Made the app create agin"
   git push
   gh pr create
+
 Approve the PR in github https://github.com/kosli-dev/jira-integration-example/pulls
+
 You should now have three jobs running in actions
   - Build Backend
   - Build Frontend
@@ -250,6 +256,7 @@ Create a release candidate
 
 Show the customer the new release
   https://kosli-team.atlassian.net/projects/OPS?selectedItem=com.atlassian.jira.jira-projects-plugin%3Arelease-page
+
 Press the release and show them that the Jira issue you created is part of the release. If there are more there
 it is just because there was some other updates also included.
 
@@ -281,8 +288,10 @@ Go back to the Jira board and make a new Jira issue: Improve frontend
 - WAIT
 
 Now we have the new fix for frontend running in staging. The backend SW is the same as before.
+
 Update the Jira release so we also include the new Jira issue
   make update_release_candidate
 
 Show the release (you must reload the page) to show that the new Jira issue is in the list
+
 Now you can now follow the steps in Fast Demo to finish the demo
