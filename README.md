@@ -102,9 +102,9 @@ but in this simulated setup we only update some git tags.
 ## Release to production
 When a developer thinks that what is currently running in staging should be released
 to production they  create a **release candidate**. The developers can trigger the
-**Create release candidate** GitHub action by running:
+**Generate Jira release** GitHub action by running:
 ```
-make create_release_candidate
+make generate_jira_release
 ```
 This job does the following:
 - Use Kosli to find out what software that is currently running on staging and
@@ -123,9 +123,9 @@ developers.
 
 After the developers has added a fix and deployed it to staging they update the
 **release candidate**. The developers can trigger the
-**Update release candidate** GitHub action by running:
+**Generate Jira release** GitHub action by running:
 ```
-make update_release_candidate
+make generate_jira_release
 ```
 
 When all approvers have set the approval to `APPROVED` the software can be deployed
@@ -252,7 +252,7 @@ The SW is now running in staging
   https://app.kosli.com/kosli-public/environments/jira-integration-example-staging/snapshots/
 
 Create a release candidate
-  make create_release_candidate
+  make generate_jira_release
 
 Show the customer the new release
   https://kosli-team.atlassian.net/projects/OPS?selectedItem=com.atlassian.jira.jira-projects-plugin%3Arelease-page
@@ -290,7 +290,7 @@ Go back to the Jira board and make a new Jira issue: Improve frontend
 Now we have the new fix for frontend running in staging. The backend SW is the same as before.
 
 Update the Jira release so we also include the new Jira issue
-  make update_release_candidate
+  make generate_jira_release
 
 Show the release (you must reload the page) to show that the new Jira issue is in the list
 

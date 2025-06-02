@@ -1,4 +1,4 @@
-name: Generate release candidate
+name: Generate Jira release
 
 on:
   workflow_dispatch:
