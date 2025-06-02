@@ -3,11 +3,14 @@ SHELL  := bash
 deploy_to_staging:
 	gh workflow run deploy-to-staging.yml --ref main
 
+generate_jira_release:
+	gh workflow run generate-jira-release.yml --ref main
+
 create_release_candidate:
-	gh workflow run create-release.yml --ref main
+	gh workflow run generate-jira-release.yml --ref main
 
 update_release_candidate:
-	gh workflow run update-release.yml --ref main
+	gh workflow run generate-jira-release.yml --ref main
 
 check_release_to_prod:
 	gh workflow run release-to-prod.yml --ref main
