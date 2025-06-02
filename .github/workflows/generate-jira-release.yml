@@ -43,19 +43,23 @@ jobs:
           CURRENT_REL_JSON=$(get_current_release_candidate ${{ env.JIRA_PROJECT_ID }})
           REL_VALUES_JSON=$(echo "${CURRENT_REL_JSON}" | jq .values)
           if [ "${REL_VALUES_JSON}" == "[]" ]; then
-            echo "No release candidate exist: ${CURRENT_REL_JSON}"
+            echo "No release candidate exist"
             echo "release-was-created=true" >> $GITHUB_OUTPUT
           
             # Create the release and get the release ID
             TIMESTAMP=$(date -u "+%Y-%m-%d-%H-%M-%S")
             CREATE_RESULT_JSON=$(create_release ${{ env.JIRA_PROJECT_ID }} ${TIMESTAMP})
             RELEASE_ID=$(echo "${CREATE_RESULT_JSON}" | jq .id)
-            echo "RELEASE_ID=${RELEASE_ID}" >> $GITHUB_ENV
   
             PROJECT_KEY=$(echo "${{ vars.JIRA_PROJECT_KEY }}" | cut -d',' -f1)
             REL_LINK="${JIRA_BASE_URL}/projects/${PROJECT_KEY}/versions/${RELEASE_ID}"
             echo "REL_LINK=${REL_LINK}" >> $GITHUB_ENV
+          else
+            echo "Release candidate exist"
+            RELEASE_ID=$(echo "${REL_VALUES_JSON}" |  jq -r '.[0].id')
           fi
+          echo "RELEASE_ID=${RELEASE_ID}" >> $GITHUB_ENV
+          echo "Updated Jira release_id: ${RELEASE_ID}" >> $GITHUB_STEP_SUMMARY
 
       - name: Begin trail
         if: ${{ steps.release-candidate.outputs.release-was-created }}
