@@ -61,7 +61,7 @@ main()
     make deploy_to_staging; wait_for_github_actions
     make report_all_envs > /dev/null; wait_for_github_actions
     echo; echo "*** Make a release candidate for SW now running in staging"
-    make create_release_candidate; wait_for_github_actions
+    make generate_jira_release; wait_for_github_actions
 
     echo; echo "*** Go to url:"
     echo "https://kosli-team.atlassian.net/projects/OPS?selectedItem=com.atlassian.jira.jira-projects-plugin%3Arelease-page"

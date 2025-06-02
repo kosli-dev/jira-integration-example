@@ -92,7 +92,7 @@ main()
     make deploy_to_staging; wait_for_github_actions
     make report_all_envs > /dev/null; wait_for_github_actions
     echo; echo "*** Make a release candidate for SW now running in staging with Jira issue ${JIRA_KEY_1}"
-    make create_release_candidate; wait_for_github_actions
+    make generate_jira_release; wait_for_github_actions
 
     echo; echo "*** We assume the product owner found a bug and wanted a new version of the backend"
 
@@ -112,7 +112,7 @@ main()
     make report_all_envs > /dev/null; wait_for_github_actions
     echo; echo "*** Update the release candidate for SW now running in staging."
     echo "*** This will add the second JIRA-KEY ($JIRA_KEY_2) to the Jira release"
-    make update_release_candidate; wait_for_github_actions
+    make generate_jira_release; wait_for_github_actions
     echo; echo "*** Check if current release candidate has been approved and can be released. This shall fail!"
     make check_release_to_prod; wait_for_github_actions
 

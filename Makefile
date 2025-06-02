@@ -6,12 +6,6 @@ deploy_to_staging:
 generate_jira_release:
 	gh workflow run generate-jira-release.yml --ref main
 
-create_release_candidate:
-	gh workflow run generate-jira-release.yml --ref main
-
-update_release_candidate:
-	gh workflow run generate-jira-release.yml --ref main
-
 check_release_to_prod:
 	gh workflow run release-to-prod.yml --ref main
 
