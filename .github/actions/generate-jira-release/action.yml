@@ -29,14 +29,14 @@ inputs:
   jira-base-url:
     description: 'Jira base URL'
     required: true
-  jira-username:
-    description: 'Jira username'
-    required: true
   jira-project-id:
     description: 'Jira project ID'
     required: true
   jira-project-key:
     description: 'Jira project key'
+    required: true
+  jira-username:
+    description: 'Jira username'
     required: true
   jira-api-token:
     description: 'Jira API token'
