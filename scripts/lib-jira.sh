@@ -184,18 +184,6 @@ function get_issue
     loud_curl_jira GET "${url}" {}
 }
 
-function add_section_to_release
-{
-    local -r releaseId=$1; shift
-
-    local -r url="${JIRA_BASE_URL}/rest/api/3/version/${releaseId}"
-    local -r data='{
-         "myCustomField": "some custom value"
-    }'
-    debug_log "Set release ${releaseId} to released:\n${data}"
-    loud_curl_jira PUT "${url}" "${data}"
-}
-
 function add_trail_link_to_release
 {
     local -r releaseId=$1; shift
@@ -212,19 +200,6 @@ function add_trail_link_to_release
 
 # Jira has no API to add an approver to a release. This must be done in the UX
 # See https://community.developer.atlassian.com/t/add-approver-to-version-through-rest-api/76975
-function add_approver_to_release
-{
-    local -r approverId=$1; shift
-    local -r releaseId=$1; shift
-
-    local -r url="${JIRA_BASE_URL}/rest/api/3/version/${releaseId}"
-    local -r data='{
-        "approvers": [{
-            "accountId": "'${approverId}'"
-        }]
-    }'
-    loud_curl_jira PUT "${url}" "${data}"
-}
 
 function get_project_id
 {
