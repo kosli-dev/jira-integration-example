@@ -93,6 +93,7 @@ runs:
             ${JIRA_PROJECT_KEY_ARG} \
             ${IGNORE_BRANCH_MATCH_ARG} \
             ${JIRA_SECONDARY_SOURCE_ARG} \
+            ${JIRA_ISSUE_ARG} \
             --assert --dry-run 2>&1 | grep "no Jira references are found" && exit 1 || exit 0
         else
           kosli attest jira \
