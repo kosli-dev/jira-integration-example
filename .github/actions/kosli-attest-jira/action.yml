@@ -82,7 +82,7 @@ runs:
             export GH_TOKEN=${{ github.token }}
             PR_NUMBER=$(git log -1 --pretty=%B | grep "Merge pull request #" | sed "s/Merge pull request #//;s/ .*//" || true)
             if [ -z "$PR_NUMBER" ]; then
-              PR_NUMBER=$(git log -1 --pretty=%B | grep "(#" | sed "s/^.*(#//;s/).*//)" || true)
+              PR_NUMBER=$(git log -1 --pretty=%B | grep "(#" | sed "s/^.*(#//;s/).*//" || true)
             fi
             if [ -z "$PR_NUMBER" ]; then
               echo "ERROR: Running on main branch but failed to get a Pull request number from the git commit message" >&2
