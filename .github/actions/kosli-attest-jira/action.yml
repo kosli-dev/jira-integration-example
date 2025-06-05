@@ -53,7 +53,6 @@ runs:
     - name: Attest Jira ticket
       shell: bash
       run: |
-        set -x
         JIRA_ISSUE_ARG=""
         if [ -n "${{ inputs.jira-issue-fields }}" ]; then
           JIRA_ISSUE_ARG="--jira-issue-fields ${{ inputs.jira-issue-fields }}"
