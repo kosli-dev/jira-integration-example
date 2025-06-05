@@ -80,9 +80,9 @@ runs:
             # get PR info from github and extract the head.ref
 
             export GH_TOKEN=${{ github.token }}
-            PR_NUMBER=$(git log -1 --pretty=%B | grep "Merge pull request #" | sed "s/Merge pull request #//;s/ .*//")
+            PR_NUMBER=$(git log -1 --pretty=%B | grep "Merge pull request #" | sed "s/Merge pull request #//;s/ .*//" || true)
             if [ -z "$PR_NUMBER" ]; then
-              PR_NUMBER=$(git log -1 --pretty=%B | grep "(#" | sed "s/^.*(#//;s/).*//")
+              PR_NUMBER=$(git log -1 --pretty=%B | grep "(#" | sed "s/^.*(#//;s/).*//)" || true)
             fi
             if [ -z "$PR_NUMBER" ]; then
               echo "ERROR: Running on main branch but failed to get a Pull request number from the git commit message" >&2
@@ -94,7 +94,7 @@ runs:
               echo "Found PR number: ${PR_NUMBER}" >&2
               ORIG_BRANCH=$(gh api repos/${{ github.repository }}/pulls/${PR_NUMBER} --jq .head.ref)
               JIRA_SECONDARY_SOURCE_ARG="--jira-secondary-source ${ORIG_BRANCH}"
-              echo "Found original branc: ${ORIG_BRANCH}" >&2
+              echo "Found original branch: ${ORIG_BRANCH}" >&2
             fi
           fi
         else
