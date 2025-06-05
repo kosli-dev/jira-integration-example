@@ -91,10 +91,10 @@ runs:
               git log -1 --pretty=%B >&2
               echo "---end commit message---" >&2
             else
-              echo "Found PR number: ${PR_NUMBER} >&2
+              echo "Found PR number: ${PR_NUMBER}" >&2
               ORIG_BRANCH=$(gh api repos/${{ github.repository }}/pulls/${PR_NUMBER} --jq .head.ref)
               JIRA_SECONDARY_SOURCE_ARG="--jira-secondary-source ${ORIG_BRANCH}"
-              echo "Found original branc: ${ORIG_BRANCH} >&2
+              echo "Found original branc: ${ORIG_BRANCH}" >&2
             fi
           fi
         else
