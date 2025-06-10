@@ -92,7 +92,7 @@ runs:
         KOSLI_API_TOKEN: ${{ inputs.kosli-api-token }}
       run: |
         echo "STEP: Begin trail with ORG: '${KOSLI_ORG}' FLOW: '${KOSLI_FLOW}' TRAIL: '${{ env.RELEASE_ID }}' TEMPLATE-FILE: '${{ inputs.kosli-template-file }}'"
-        kosli begin trail ${{ env.RELEASE_ID }} --template-file ${{ inputs.kosli-template-file }} --external-url JireRelease=${{ env.REL_LINK }}
+        kosli begin trail ${{ env.RELEASE_ID }} --template-file ${{ inputs.kosli-template-file }} --external-url JiraRelease=${{ env.REL_LINK }}
 
 
     - name: Add trail to jira release
