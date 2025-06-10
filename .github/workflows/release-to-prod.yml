@@ -102,7 +102,7 @@ jobs:
             --trail ${{ env.RELEASE_ID }} \
             --attestation-data /tmp/jira-release.json \
             --annotate Approver="${APPROVER_NAME}" \
-            --annotate JireRelease=${REL_LINK}
+            --annotate JiraRelease=${REL_LINK}
 
       - name: Get what SW is running in staging
         run: |
