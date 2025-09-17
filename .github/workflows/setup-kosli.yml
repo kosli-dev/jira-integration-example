@@ -11,6 +11,7 @@ env:
   KOSLI_ENV_DEV: "${{ vars.KOSLI_ENV_DEV }}"
   KOSLI_ENV_STAGING:  "${{ vars.KOSLI_ENV_STAGING }}"
   KOSLI_ENV_PROD:  "${{ vars.KOSLI_ENV_PROD }}"
+  KOSLI_HOST: "https://app.us.kosli.com"
   # KOSLI_DRY_RUN: true
 
 jobs:
