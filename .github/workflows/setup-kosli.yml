@@ -6,11 +6,12 @@ on:
 env:
   # kosli commands picks up org, flow, trail and api-token from these environment variables
   KOSLI_ORG: "${{ vars.KOSLI_ORG }}"
-  KOSLI_API_TOKEN: "${{ secrets.KOSLI_PUBLIC_API_TOKEN }}"
+  KOSLI_API_TOKEN: "${{ secrets.KOSLI_PUBLIC_API_TOKEN_US }}"
   KOSLI_CLI_VERSION: "${{ vars.KOSLI_CLI_VERSION }}"
   KOSLI_ENV_DEV: "${{ vars.KOSLI_ENV_DEV }}"
   KOSLI_ENV_STAGING:  "${{ vars.KOSLI_ENV_STAGING }}"
   KOSLI_ENV_PROD:  "${{ vars.KOSLI_ENV_PROD }}"
+  KOSLI_HOST: "https://app.us.kosli.com"
   # KOSLI_DRY_RUN: true
 
 jobs:
