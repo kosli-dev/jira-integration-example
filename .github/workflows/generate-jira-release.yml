@@ -26,5 +26,5 @@ jobs:
            jira-base-url: ${{ vars.JIRA_BASE_URL }}
            jira-project-id: ${{ vars.JIRA_PROJECT_ID }}
            jira-project-key: ${{ vars.JIRA_PROJECT_KEY }}
-           jira-username: ${{ secrets.KOSLI_JIRA_USERNAME }}
+           jira-username: ${{ vars.KOSLI_JIRA_USERNAME }}
            jira-api-token: ${{ secrets.KOSLI_JIRA_API_TOKEN }}
